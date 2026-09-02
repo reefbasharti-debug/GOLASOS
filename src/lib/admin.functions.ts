@@ -64,7 +64,8 @@ export const saveProduct = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
-    const { id, ...patch } = data;
+    const { id, ...raw } = data;
+    const patch = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== undefined));
     const { error } = await context.supabase.from("products").update(patch).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -85,7 +86,8 @@ export const saveCategory = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
-    const { id, ...patch } = data;
+    const { id, ...raw } = data;
+    const patch = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== undefined));
     const { error } = await context.supabase.from("categories").update(patch).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };

@@ -106,11 +106,11 @@ export async function loadProduct(id: string) {
 type OrderInput = {
   customerName: string;
   phone: string;
-  email?: string;
-  city?: string;
-  address?: string;
-  notes?: string;
-  items: { productId: string; size?: string; quantity: number }[];
+  email?: string | undefined;
+  city?: string | undefined;
+  address?: string | undefined;
+  notes?: string | undefined;
+  items: { productId: string; size?: string | undefined; quantity: number }[];
 };
 
 export async function createOrder(input: OrderInput) {
