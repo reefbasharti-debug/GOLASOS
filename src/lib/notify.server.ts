@@ -4,12 +4,12 @@ export type OrderNotification = {
   orderNumber: number | string;
   customerName: string;
   phone: string;
-  email?: string | null;
-  city?: string | null;
-  address?: string | null;
-  notes?: string | null;
+  email?: string | null | undefined;
+  city?: string | null | undefined;
+  address?: string | null | undefined;
+  notes?: string | null | undefined;
   total: number;
-  items: { name: string; size?: string | null; quantity: number; price: number }[];
+  items: { name: string; size?: string | null | undefined; quantity: number; price: number }[];
 };
 
 function plainText(o: OrderNotification): string {

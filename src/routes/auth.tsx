@@ -3,7 +3,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 
 const schema = z.object({
   email: z.string().trim().email("אימייל לא תקין").max(200),
@@ -62,18 +61,6 @@ function AuthPage() {
     }
   };
 
-  const google = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast.error("ההתחברות עם גוגל נכשלה");
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: "/admin" });
-  };
-
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <h1 className="text-2xl font-bold">
@@ -106,13 +93,6 @@ function AuthPage() {
           className="w-full rounded-md surface-gold px-4 py-2.5 font-bold disabled:opacity-60"
         >
           {mode === "signin" ? "התחברות" : "הרשמה"}
-        </button>
-        <button
-          type="button"
-          onClick={google}
-          className="w-full rounded-md border px-4 py-2.5 font-semibold transition-colors hover:bg-secondary"
-        >
-          התחברות עם Google
         </button>
         <button
           type="button"

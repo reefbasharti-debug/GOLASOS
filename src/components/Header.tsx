@@ -14,6 +14,31 @@ const KIND_LABEL: Record<string, string> = {
   mixed: "קולקציות נוספות",
 };
 
+/** Soccer ball glyph used in place of the final letter of the brand name */
+export function SoccerBall({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} aria-hidden="true" fill="none">
+      <circle cx="32" cy="32" r="29" fill="currentColor" />
+      <circle cx="32" cy="32" r="29" stroke="currentColor" strokeWidth="2" />
+      <g fill="var(--sidebar, #1a2b48)">
+        <polygon points="32,20 43,28 39,41 25,41 21,28" />
+        <polygon points="32,3 40,9 32,16 24,9" transform="translate(0,2)" />
+        <polygon points="56,22 61,32 55,40 49,31" />
+        <polygon points="8,22 15,31 9,40 3,32" />
+        <polygon points="45,52 40,61 32,58 36,48" />
+        <polygon points="19,52 28,48 32,58 24,61" />
+      </g>
+      <g stroke="var(--sidebar, #1a2b48)" strokeWidth="2" strokeLinecap="round">
+        <line x1="32" y1="18" x2="32" y2="20" />
+        <line x1="43" y1="28" x2="50" y2="31" />
+        <line x1="21" y1="28" x2="14" y2="31" />
+        <line x1="39" y1="41" x2="42" y2="49" />
+        <line x1="25" y1="41" x2="22" y2="49" />
+      </g>
+    </svg>
+  );
+}
+
 export function Header({ categories }: { categories: NavCategory[] }) {
   const { count } = useCart();
   const [open, setOpen] = useState(false);
@@ -62,9 +87,9 @@ export function Header({ categories }: { categories: NavCategory[] }) {
           </SheetContent>
         </Sheet>
 
-        <Link to="/" className="flex items-center gap-2">
-          <span className="rounded surface-gold px-2 py-1 text-lg font-extrabold leading-none">G</span>
-          <span className="text-xl font-extrabold tracking-tight">גולאסוס</span>
+        <Link to="/" className="flex items-center" aria-label="גולאסוס - דף הבית">
+          <span className="text-xl font-extrabold tracking-tight">גולאסו</span>
+          <SoccerBall className="size-[1.05em] text-xl" />
         </Link>
 
         <nav className="mx-4 hidden flex-1 items-center gap-5 text-sm font-medium md:flex">

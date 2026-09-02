@@ -64,8 +64,10 @@ export const saveProduct = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
-    const { id, ...patch } = data;
-    const { error } = await context.supabase.from("products").update(patch).eq("id", id);
+    const { id, ...raw } = data;
+    const patch: Record<string, string | number | boolean | string[]> = {};
+    for (const [k, v] of Object.entries(raw)) if (v !== undefined) patch[k] = v;
+    const { error } = await context.supabase.from("products").update(patch as never).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -85,8 +87,10 @@ export const saveCategory = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
-    const { id, ...patch } = data;
-    const { error } = await context.supabase.from("categories").update(patch).eq("id", id);
+    const { id, ...raw } = data;
+    const patch: Record<string, string | number | boolean> = {};
+    for (const [k, v] of Object.entries(raw)) if (v !== undefined) patch[k] = v;
+    const { error } = await context.supabase.from("categories").update(patch as never).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
