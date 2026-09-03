@@ -18,6 +18,8 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          group_name: string
+          group_order: number
           id: string
           image_url: string | null
           is_active: boolean
@@ -25,11 +27,14 @@ export type Database = {
           name: string
           slug: string
           sort_order: number
+          source_id: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           description?: string | null
+          group_name?: string
+          group_order?: number
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -37,11 +42,14 @@ export type Database = {
           name: string
           slug: string
           sort_order?: number
+          source_id?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           description?: string | null
+          group_name?: string
+          group_order?: number
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -49,6 +57,7 @@ export type Database = {
           name?: string
           slug?: string
           sort_order?: number
+          source_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -158,6 +167,7 @@ export type Database = {
           product_type: string
           sizes: string[]
           sort_order: number
+          source_id: string | null
           supplier_model: string | null
           updated_at: string
         }
@@ -175,6 +185,7 @@ export type Database = {
           product_type?: string
           sizes?: string[]
           sort_order?: number
+          source_id?: string | null
           supplier_model?: string | null
           updated_at?: string
         }
@@ -192,6 +203,7 @@ export type Database = {
           product_type?: string
           sizes?: string[]
           sort_order?: number
+          source_id?: string | null
           supplier_model?: string | null
           updated_at?: string
         }
