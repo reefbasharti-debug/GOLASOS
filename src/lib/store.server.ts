@@ -35,7 +35,7 @@ export async function loadStoreData() {
   const [categories, featured, settings] = await Promise.all([
     sb
       .from("categories")
-      .select("id, slug, name, kind, image_url, description")
+      .select("id, slug, name, kind, image_url, description, group_name, group_order")
       .eq("is_active", true)
       .order("sort_order"),
     sb
@@ -59,7 +59,7 @@ export async function loadCategoryPage(slug: string) {
   const sb = publicClient();
   const { data: category } = await sb
     .from("categories")
-    .select("id, slug, name, kind, description, image_url")
+    .select("id, slug, name, kind, description, image_url, group_name, group_order")
     .eq("slug", slug)
     .eq("is_active", true)
     .maybeSingle();
