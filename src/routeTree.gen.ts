@@ -17,6 +17,7 @@ import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as OrderReceivedRouteImport } from './routes/order-received'
+import { Route as ShoesRouteImport } from './routes/shoes'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
@@ -61,6 +62,11 @@ const OrderReceivedRoute = OrderReceivedRouteImport.update({
   path: '/order-received',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShoesRoute = ShoesRouteImport.update({
+  id: '/shoes',
+  path: '/shoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/order-received': typeof OrderReceivedRoute
+  '/shoes': typeof ShoesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/order-received': typeof OrderReceivedRoute
+  '/shoes': typeof ShoesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/order-received': typeof OrderReceivedRoute
+  '/shoes': typeof ShoesRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/order-received'
+    | '/shoes'
     | '/admin'
     | '/category/$slug'
     | '/product/$id'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/order-received'
+    | '/shoes'
     | '/admin'
     | '/category/$slug'
     | '/product/$id'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/order-received'
+    | '/shoes'
     | '/_authenticated/admin'
     | '/category/$slug'
     | '/product/$id'
@@ -175,6 +187,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   OrderReceivedRoute: typeof OrderReceivedRoute
+  ShoesRoute: typeof ShoesRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductIdRoute: typeof ProductIdRoute
   ApiPublicImgRoute: typeof ApiPublicImgRoute
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderReceivedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shoes': {
+      id: '/shoes'
+      path: '/shoes'
+      fullPath: '/shoes'
+      preLoaderRoute: typeof ShoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -289,6 +309,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   OrderReceivedRoute: OrderReceivedRoute,
+  ShoesRoute: ShoesRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductIdRoute: ProductIdRoute,
   ApiPublicImgRoute: ApiPublicImgRoute,
