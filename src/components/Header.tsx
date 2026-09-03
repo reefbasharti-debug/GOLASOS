@@ -4,15 +4,9 @@ import { useState } from "react";
 import { useCart } from "@/lib/cart";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
-export type NavCategory = { slug: string; name: string; kind: string };
+import { groupCategories, type CatalogCategory } from "@/lib/catalog";
 
-const KIND_LABEL: Record<string, string> = {
-  club: "קבוצות מועדון",
-  national: "נבחרות לאומיות",
-  retro: "חולצות רטרו",
-  shoes: "נעלי כדורגל",
-  mixed: "קולקציות נוספות",
-};
+export type NavCategory = CatalogCategory;
 
 /** Soccer ball glyph used in place of the final letter of the brand name */
 export function SoccerBall({ className }: { className?: string }) {
@@ -43,13 +37,7 @@ export function Header({ categories }: { categories: NavCategory[] }) {
   const { count } = useCart();
   const [open, setOpen] = useState(false);
 
-  const groups = Object.entries(
-    categories.reduce<Record<string, NavCategory[]>>((acc, c) => {
-      const key = KIND_LABEL[c.kind] ? c.kind : "mixed";
-      acc[key] = [...(acc[key] ?? []), c];
-      return acc;
-    }, {}),
-  );
+  const groups = groupCategories(categories);
 
   return (
     <header className="sticky top-0 z-50 surface-navy shadow-md">
@@ -63,12 +51,14 @@ export function Header({ categories }: { categories: NavCategory[] }) {
           </SheetTrigger>
           <SheetContent side="right" className="w-80 overflow-y-auto bg-sidebar text-sidebar-foreground">
             <SheetTitle className="text-sidebar-foreground">כל הקטגוריות</SheetTitle>
-            <nav className="mt-4 space-y-5 pb-10">
-              {groups.map(([kind, list]) => (
-                <div key={kind}>
-                  <p className="mb-2 text-xs font-bold uppercase text-accent">{KIND_LABEL[kind]}</p>
-                  <ul className="space-y-1">
-                    {list.map((c) => (
+            <nav className="mt-4 space-y-1 pb-10">
+              {groups.map((g) => (
+                <details key={g.name} className="group">
+                  <summary className="cursor-pointer list-none rounded px-2 py-1.5 text-sm font-bold text-accent hover:bg-sidebar-accent">
+                    {g.name} <span className="text-xs opacity-70">({g.items.length})</span>
+                  </summary>
+                  <ul className="mt-1 space-y-0.5 pr-2">
+                    {g.items.map((c) => (
                       <li key={c.slug}>
                         <Link
                           to="/category/$slug"
@@ -81,7 +71,7 @@ export function Header({ categories }: { categories: NavCategory[] }) {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </details>
               ))}
             </nav>
           </SheetContent>
@@ -99,11 +89,7 @@ export function Header({ categories }: { categories: NavCategory[] }) {
           <Link to="/categories" className="transition-colors hover:text-accent">
             כל הקטגוריות
           </Link>
-          <Link
-            to="/category/$slug"
-            params={{ slug: "football-boots" }}
-            className="transition-colors hover:text-accent"
-          >
+          <Link to="/shoes" className="transition-colors hover:text-accent">
             נעלי כדורגל
           </Link>
           <Link to="/contact" className="transition-colors hover:text-accent">
