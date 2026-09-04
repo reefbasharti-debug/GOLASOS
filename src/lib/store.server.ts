@@ -289,7 +289,13 @@ export async function createOrder(input: OrderInput) {
 
   if (!items.length) throw new Error("המוצרים בעגלה אינם זמינים");
 
-  const total = items.reduce((sum, i) => sum + i.unit_price_ils * i.quantity, 0);
+  const express = input.shipping === "express";
+  const shippingCost = express ? EXPRESS_SHIPPING_ILS : 0;
+  const shippingLabel = express
+    ? `משלוח מהיר (עד 10 ימי עסקים) — ${EXPRESS_SHIPPING_ILS} ₪`
+    : "משלוח חינם (עד 20 ימי עסקים)";
+  const total = items.reduce((sum, i) => sum + i.unit_price_ils * i.quantity, 0) + shippingCost;
+  const notes = [input.notes, shippingLabel].filter(Boolean).join(" | ");
 
   const { data: order, error: orderError } = await supabaseAdmin
     .from("orders")
@@ -299,9 +305,10 @@ export async function createOrder(input: OrderInput) {
       email: input.email || null,
       city: input.city || null,
       address: input.address || null,
-      notes: input.notes || null,
+      notes: notes || null,
       total_ils: total,
     })
+
     .select("id, order_number")
     .single();
 
