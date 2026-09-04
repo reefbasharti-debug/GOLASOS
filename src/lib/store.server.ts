@@ -171,7 +171,7 @@ export async function loadHomeData() {
   };
 }
 
-export type ShoeFilters = { model?: string; color?: string; size?: string; tier?: string };
+export type ShoeFilters = { model?: string | undefined; color?: string | undefined; size?: string | undefined; tier?: string | undefined };
 
 export async function loadShoes(f: ShoeFilters) {
   const sb = publicClient();
