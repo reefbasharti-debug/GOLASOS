@@ -71,8 +71,9 @@ function CheckoutPage() {
         data: {
           ...parsed.data,
           shipping,
-
+          items: items.map((i) => ({
             productId: i.productId,
+
             size: i.custom ? `${i.size} | ${i.custom}` : i.size,
             quantity: i.quantity,
           })),
