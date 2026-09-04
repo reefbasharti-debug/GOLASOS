@@ -191,6 +191,14 @@ export function Header({
                   </details>
                 ))}
               </nav>
+              <Link
+                to="/auth"
+                onClick={() => setOpen(false)}
+                className="btn-critical-sm focus-key mt-4 flex w-full items-center justify-center gap-2"
+              >
+                <User className="size-4" />
+                {t("sign_in")}
+              </Link>
             </SheetContent>
           </Sheet>
           <Logo />
