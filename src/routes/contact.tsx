@@ -40,7 +40,9 @@ function ContactPage() {
         <div className="rounded-lg border bg-card p-5 sm:col-span-2">
           <p className="text-sm font-bold">משלוחים</p>
           <p className="mt-1 text-muted-foreground">
-            {settings["shipping_note"] ?? "זמן אספקה משוער: 14–21 ימי עסקים, משלוח לכל הארץ."}
+            {settings["shipping_note"] ??
+              "משלוח חינם לכל הארץ — עד 20 ימי עסקים. משלוח מהיר בתוספת 50 ₪ — עד 10 ימי עסקים."}
+
           </p>
         </div>
       </div>

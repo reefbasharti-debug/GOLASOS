@@ -35,6 +35,8 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const send = useServerFn(submitOrder);
   const [pending, setPending] = useState(false);
+  const [shipping, setShipping] = useState<"free" | "express">("free");
+  const shippingCost = shipping === "express" ? 50 : 0;
   const [form, setForm] = useState({
     customerName: "",
     phone: "",
@@ -43,6 +45,7 @@ function CheckoutPage() {
     address: "",
     notes: "",
   });
+
 
   const field = (key: keyof typeof form) => ({
     value: form[key],
@@ -67,8 +70,10 @@ function CheckoutPage() {
       const result = await send({
         data: {
           ...parsed.data,
+          shipping,
           items: items.map((i) => ({
             productId: i.productId,
+
             size: i.custom ? `${i.size} | ${i.custom}` : i.size,
             quantity: i.quantity,
           })),
@@ -135,6 +140,35 @@ function CheckoutPage() {
               <input {...field("address")} className="w-full rounded-md border px-3 py-2" maxLength={200} />
             </div>
           </div>
+          <fieldset className="rounded-md border p-3">
+            <legend className="px-1 text-sm font-semibold">אפשרות משלוח</legend>
+            <label className="flex cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-secondary">
+              <input
+                type="radio"
+                name="shipping"
+                className="mt-1"
+                checked={shipping === "free"}
+                onChange={() => setShipping("free")}
+              />
+              <span>
+                <span className="block font-semibold">משלוח חינם — 0 ₪</span>
+                <span className="block text-sm text-muted-foreground">זמן אספקה: עד 20 ימי עסקים</span>
+              </span>
+            </label>
+            <label className="flex cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-secondary">
+              <input
+                type="radio"
+                name="shipping"
+                className="mt-1"
+                checked={shipping === "express"}
+                onChange={() => setShipping("express")}
+              />
+              <span>
+                <span className="block font-semibold">משלוח מהיר — תוספת 50 ₪</span>
+                <span className="block text-sm text-muted-foreground">זמן אספקה: עד 10 ימי עסקים</span>
+              </span>
+            </label>
+          </fieldset>
           <div>
             <label className="mb-1 block text-sm font-semibold">הערות להזמנה</label>
             <textarea
@@ -144,6 +178,7 @@ function CheckoutPage() {
               maxLength={600}
             />
           </div>
+
           <button
             type="submit"
             disabled={pending}
@@ -169,7 +204,18 @@ function CheckoutPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-4 border-t pt-3 text-lg font-bold">סה"כ: {total} ₪</p>
+          <div className="mt-4 space-y-1 border-t pt-3 text-sm">
+            <p className="flex justify-between">
+              <span>מוצרים</span>
+              <span>{total} ₪</span>
+            </p>
+            <p className="flex justify-between">
+              <span>{shipping === "express" ? "משלוח מהיר (עד 10 ימי עסקים)" : "משלוח חינם (עד 20 ימי עסקים)"}</span>
+              <span>{shippingCost ? `${shippingCost} ₪` : "חינם"}</span>
+            </p>
+          </div>
+          <p className="mt-2 text-lg font-bold">סה"כ: {total + shippingCost} ₪</p>
+
         </aside>
       </div>
     </div>
