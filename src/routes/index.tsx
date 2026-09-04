@@ -1,5 +1,7 @@
 import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router";
 import { useState } from "react";
+import { Package } from "lucide-react";
+
 import { ProductCard, type ProductCardData } from "@/components/ProductCard";
 import { CategoryTile, GroupBadge } from "@/components/CategoryTile";
 import { DEFAULT_SLIDES, HeroSlider } from "@/components/HeroSlider";
