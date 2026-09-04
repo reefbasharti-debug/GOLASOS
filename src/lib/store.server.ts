@@ -253,8 +253,12 @@ type OrderInput = {
   city?: string | undefined;
   address?: string | undefined;
   notes?: string | undefined;
+  shipping?: "free" | "express" | undefined;
   items: { productId: string; size?: string | undefined; quantity: number }[];
 };
+
+export const EXPRESS_SHIPPING_ILS = 50;
+
 
 export async function createOrder(input: OrderInput) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
