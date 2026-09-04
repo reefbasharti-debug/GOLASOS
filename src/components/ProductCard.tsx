@@ -92,18 +92,18 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       </Link>
 
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <button type="button" onClick={handleAdd} className="btn-critical-sm h-10 px-2">
-          <ShoppingBag className="size-4" />
-          <span className="truncate">{t("add_to_cart")}</span>
+        <button type="button" onClick={handleAdd} className="btn-critical-sm h-10 px-1.5 text-[11px] leading-none">
+          <ShoppingBag className="size-3.5 shrink-0" />
+          <span className="whitespace-nowrap">{t("add_to_cart")}</span>
         </button>
         <Link
           to="/product/$id"
           params={{ id: product.id }}
-          className="btn-critical-ghost h-10 px-2"
+          className="btn-critical-ghost h-10 px-1.5 text-[11px] leading-none"
           aria-label={`${t("view_product")} – ${product.name}`}
         >
-          <Eye className="size-4" />
-          <span className="truncate">{t("view_product")}</span>
+          <Eye className="size-3.5 shrink-0" />
+          <span className="whitespace-nowrap">{t("view_product")}</span>
         </Link>
       </div>
     </div>
