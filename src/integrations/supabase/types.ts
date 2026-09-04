@@ -89,6 +89,48 @@ export type Database = {
         }
         Relationships: []
       }
+      customers: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string
+          postal_code: string | null
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone: string
+          postal_code?: string | null
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string
+          postal_code?: string | null
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           id: string
@@ -139,11 +181,14 @@ export type Database = {
           address: string | null
           city: string | null
           created_at: string
+          customer_id: string | null
           customer_name: string
           email: string | null
           id: string
           notes: string | null
           order_number: number
+          paid_at: string | null
+          payment_status: string
           phone: string
           status: string
           total_ils: number
@@ -153,11 +198,14 @@ export type Database = {
           address?: string | null
           city?: string | null
           created_at?: string
+          customer_id?: string | null
           customer_name: string
           email?: string | null
           id?: string
           notes?: string | null
           order_number?: number
+          paid_at?: string | null
+          payment_status?: string
           phone: string
           status?: string
           total_ils?: number
@@ -167,17 +215,28 @@ export type Database = {
           address?: string | null
           city?: string | null
           created_at?: string
+          customer_id?: string | null
           customer_name?: string
           email?: string | null
           id?: string
           notes?: string | null
           order_number?: number
+          paid_at?: string | null
+          payment_status?: string
           phone?: string
           status?: string
           total_ils?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
