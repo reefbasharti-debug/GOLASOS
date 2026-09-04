@@ -83,12 +83,13 @@ export const saveCategory = createServerFn({ method: "POST" })
         description: z.string().max(1000).optional(),
         sort_order: z.number().int().min(0).max(9999).optional(),
         is_active: z.boolean().optional(),
+        logo_url: z.string().trim().max(500).nullable().optional(),
       })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
     const { id, ...raw } = data;
-    const patch: Record<string, string | number | boolean> = {};
+    const patch: Record<string, string | number | boolean | null> = {};
     for (const [k, v] of Object.entries(raw)) if (v !== undefined) patch[k] = v;
     const { error } = await context.supabase.from("categories").update(patch as never).eq("id", id);
     if (error) throw new Error(error.message);

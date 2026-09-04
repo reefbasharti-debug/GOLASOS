@@ -24,6 +24,7 @@ export type Database = {
           image_url: string | null
           is_active: boolean
           kind: string
+          logo_url: string | null
           name: string
           slug: string
           sort_order: number
@@ -39,6 +40,7 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           kind?: string
+          logo_url?: string | null
           name: string
           slug: string
           sort_order?: number
@@ -54,10 +56,35 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           kind?: string
+          logo_url?: string | null
           name?: string
           slug?: string
           sort_order?: number
           source_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      category_groups: {
+        Row: {
+          created_at: string
+          image_url: string | null
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          image_url?: string | null
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          image_url?: string | null
+          name?: string
+          sort_order?: number
           updated_at?: string
         }
         Relationships: []

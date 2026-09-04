@@ -43,7 +43,12 @@ function CategoryPage() {
         <Link to="/">דף הבית</Link> / <Link to="/categories">קטגוריות</Link>
         {category!.group_name ? <> / {category!.group_name}</> : null} / {category!.name}
       </nav>
-      <h1 className="mt-2 text-2xl font-bold">{category!.name}</h1>
+      <h1 className="mt-2 flex items-center gap-3 text-2xl font-bold">
+        {category!.logo_url ? (
+          <img src={category!.logo_url} alt={`סמל ${category!.name}`} className="h-12 w-12 object-contain" />
+        ) : null}
+        {category!.name}
+      </h1>
       {category!.description ? (
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{category!.description}</p>
       ) : null}

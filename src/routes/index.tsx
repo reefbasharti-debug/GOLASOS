@@ -1,6 +1,6 @@
 import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router";
 import { ProductCard } from "@/components/ProductCard";
-import { imageUrl } from "@/lib/img";
+import { CategoryTile, GroupBadge } from "@/components/CategoryTile";
 import { groupCategories } from "@/lib/catalog";
 
 const rootApi = getRouteApi("__root__");
@@ -27,8 +27,11 @@ export const Route = createFileRoute("/")({
 const PER_GROUP = 8;
 
 function Index() {
-  const { categories, featured, settings } = rootApi.useLoaderData();
-  const jerseyGroups = groupCategories(categories.filter((c) => c.kind !== "shoes"));
+  const { categories, groups, featured, settings } = rootApi.useLoaderData();
+  const jerseyGroups = groupCategories(
+    categories.filter((c) => c.kind !== "shoes"),
+    groups,
+  );
   const shoeGroups = groupCategories(categories.filter((c) => c.kind === "shoes"));
   const shoes = shoeGroups.flatMap((g) => g.items);
 
@@ -46,7 +49,12 @@ function Index() {
         <span className="text-muted-foreground">משלוח לכל הארץ</span>
         <nav className="mr-auto flex flex-wrap gap-2 text-xs font-semibold">
           {jerseyGroups.map((g) => (
-            <a key={g.name} href={`#g-${encodeURIComponent(g.name)}`} className="rounded-full border px-2.5 py-1 hover:bg-secondary">
+            <a
+              key={g.name}
+              href={`#g-${encodeURIComponent(g.name)}`}
+              className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 hover:bg-secondary"
+            >
+              <GroupBadge name={g.name} image={g.image_url} className="h-4 w-4" />
               {g.name}
             </a>
           ))}
@@ -59,7 +67,10 @@ function Index() {
       {jerseyGroups.map((g) => (
         <section key={g.name} id={`g-${encodeURIComponent(g.name)}`} className="mt-8 scroll-mt-20">
           <div className="mb-3 flex items-end justify-between">
-            <h2 className="text-lg font-bold">{g.name}</h2>
+            <h2 className="flex items-center gap-2 text-lg font-bold">
+              <GroupBadge name={g.name} image={g.image_url} className="h-7 w-7" />
+              {g.name}
+            </h2>
             {g.items.length > PER_GROUP ? (
               <Link
                 to="/categories"
@@ -72,7 +83,7 @@ function Index() {
           </div>
           <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-8">
             {g.items.slice(0, PER_GROUP).map((c) => (
-              <CategoryTile key={c.slug} slug={c.slug} name={c.name} image={c.image_url} />
+              <CategoryTile key={c.slug} slug={c.slug} name={c.name} image={c.image_url} logo={c.logo_url} />
             ))}
           </div>
         </section>
@@ -105,22 +116,5 @@ function Index() {
         </section>
       ) : null}
     </div>
-  );
-}
-
-function CategoryTile({ slug, name, image }: { slug: string; name: string; image: string | null }) {
-  return (
-    <Link
-      to="/category/$slug"
-      params={{ slug }}
-      className="card-hover overflow-hidden rounded-lg border bg-card text-center"
-    >
-      <div className="aspect-square bg-muted">
-        {image ? (
-          <img src={imageUrl(image)} alt={name} loading="lazy" className="h-full w-full object-cover" />
-        ) : null}
-      </div>
-      <p className="line-clamp-2 px-1 py-1.5 text-xs font-semibold leading-4">{name}</p>
-    </Link>
   );
 }
