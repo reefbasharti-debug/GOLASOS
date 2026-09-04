@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, Sparkles, Facebook, Instagram, Menu, Search, ShoppingCart, Twitter, User, Youtube, X, MessageCircle } from "lucide-react";
+import { ChevronDown, Sparkles, Home, Footprints, Star, Facebook, Instagram, Menu, Search, ShoppingCart, Twitter, User, Youtube, X, MessageCircle } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
@@ -250,7 +250,8 @@ export function Header({
         </div>
 
         <nav className="flex flex-1 flex-wrap items-center gap-x-6 ps-6 text-sm font-bold">
-          <Link to="/" className="py-3 hover:text-primary/70">
+          <Link to="/" className="nav-key my-1.5 flex items-center gap-1.5">
+            <Home className="size-3.5" />
             {t("home")}
           </Link>
           {mainNav.map((g) => (
@@ -258,8 +259,13 @@ export function Header({
               <Link
                 to="/categories"
                 hash={`g-${encodeURIComponent(g.name)}`}
-                className="flex items-center gap-1 hover:text-primary/70"
+                className={
+                  KEY_GROUPS.includes(g.name)
+                    ? "nav-key -my-1.5 flex items-center gap-1"
+                    : "flex items-center gap-1 hover:text-primary/70"
+                }
               >
+                {KEY_GROUPS.includes(g.name) ? <Star className="size-3.5" /> : null}
                 {g.name} <ChevronDown className="size-3.5" />
               </Link>
               <div className="absolute start-0 top-full z-40 hidden w-[34rem] border bg-popover p-4 shadow-elevated group-hover:block">
@@ -279,8 +285,9 @@ export function Header({
               </div>
             </div>
           ))}
-          <Link to="/shoes" className="flex items-center gap-1 py-3 hover:text-primary/70">
-            {t("shoes")} <ChevronDown className="size-3.5" />
+          <Link to="/shoes" className="nav-key my-1.5 flex items-center gap-1.5">
+            <Footprints className="size-3.5" />
+            {t("shoes")}
           </Link>
           <Link
             to="/mystery-box"
