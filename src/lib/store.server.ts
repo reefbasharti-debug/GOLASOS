@@ -327,7 +327,7 @@ export async function createOrder(input: OrderInput) {
     email: input.email,
     city: input.city,
     address: input.address,
-    notes: input.notes,
+    notes,
     total,
     items: items.map((i) => ({
       name: i.product_name,
