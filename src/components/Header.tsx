@@ -144,7 +144,16 @@ export function Header({
             <SheetContent side={lang === "he" ? "right" : "left"} className="w-80 overflow-y-auto">
               <SheetTitle>{t("all_categories")}</SheetTitle>
               <nav className="mt-4 space-y-1 pb-10">
+                <div className="mb-3 flex flex-wrap gap-2">
+                  <Link to="/" onClick={() => setOpen(false)} className="nav-key gap-1.5 text-sm">
+                    <Home className="size-4" /> {t("home")}
+                  </Link>
+                  <Link to="/shoes" onClick={() => setOpen(false)} className="nav-key gap-1.5 text-sm">
+                    <Footprints className="size-4" /> {t("shoes")}
+                  </Link>
+                </div>
                 {groups.map((g) => (
+
                   <details key={g.name} className="group">
                     <summary className="flex cursor-pointer list-none items-center gap-2 rounded px-2 py-1.5 text-sm font-bold hover:bg-secondary">
                       {g.image_url ? <img src={g.image_url} alt="" className="size-5 object-contain" /> : null}
