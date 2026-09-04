@@ -55,9 +55,8 @@ function TabbedProducts({ tabs }: { tabs: Tab[] }) {
         ))}
         <Link
           to="/mystery-box"
-          className="btn-critical-sm focus-key inline-flex items-center gap-2 rounded-full px-5 py-1.5 text-base font-semibold md:text-lg"
+          className="border-b-2 border-transparent pb-1 text-2xl font-light text-foreground/80 transition-colors hover:text-foreground md:text-3xl"
         >
-          <Package className="size-4" aria-hidden />
           {t("mystery_box")}
         </Link>
       </div>
