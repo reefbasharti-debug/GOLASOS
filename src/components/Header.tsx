@@ -36,11 +36,11 @@ export function SoccerBall({ className }: { className?: string }) {
 export function Logo({ className = "" }: { className?: string }) {
   return (
     <Link to="/" className={`flex flex-col items-center leading-none ${className}`} aria-label="גולאסוס - דף הבית">
-      <span className="flex items-center text-navy">
-        <span className="font-display text-3xl font-extrabold tracking-tight">גולאסו</span>
-        <SoccerBall className="size-[0.95em] text-3xl text-navy" />
+      <span className="flex items-center gap-0 text-navy font-display text-3xl font-extrabold tracking-tight">
+        <span>גולא</span>
+        <SoccerBall className="size-[0.68em] text-navy" aria-hidden="true" />
+        <span>סוס</span>
       </span>
-      <span className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.35em] text-muted-foreground">Golassos</span>
     </Link>
   );
 }
