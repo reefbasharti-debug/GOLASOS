@@ -140,6 +140,35 @@ function CheckoutPage() {
               <input {...field("address")} className="w-full rounded-md border px-3 py-2" maxLength={200} />
             </div>
           </div>
+          <fieldset className="rounded-md border p-3">
+            <legend className="px-1 text-sm font-semibold">אפשרות משלוח</legend>
+            <label className="flex cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-secondary">
+              <input
+                type="radio"
+                name="shipping"
+                className="mt-1"
+                checked={shipping === "free"}
+                onChange={() => setShipping("free")}
+              />
+              <span>
+                <span className="block font-semibold">משלוח חינם — 0 ₪</span>
+                <span className="block text-sm text-muted-foreground">זמן אספקה: עד 20 ימי עסקים</span>
+              </span>
+            </label>
+            <label className="flex cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-secondary">
+              <input
+                type="radio"
+                name="shipping"
+                className="mt-1"
+                checked={shipping === "express"}
+                onChange={() => setShipping("express")}
+              />
+              <span>
+                <span className="block font-semibold">משלוח מהיר — תוספת 50 ₪</span>
+                <span className="block text-sm text-muted-foreground">זמן אספקה: עד 10 ימי עסקים</span>
+              </span>
+            </label>
+          </fieldset>
           <div>
             <label className="mb-1 block text-sm font-semibold">הערות להזמנה</label>
             <textarea
@@ -149,6 +178,7 @@ function CheckoutPage() {
               maxLength={600}
             />
           </div>
+
           <button
             type="submit"
             disabled={pending}
