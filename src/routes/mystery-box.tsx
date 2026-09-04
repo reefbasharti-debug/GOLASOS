@@ -57,8 +57,6 @@ function MysteryBoxPage() {
   const [kind, setKind] = useState<string>("surprise");
   const [teams, setTeams] = useState("");
   const [avoid, setAvoid] = useState("");
-  const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
   const [withPatch, setWithPatch] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
@@ -83,8 +81,8 @@ function MysteryBoxPage() {
     const parts: string[] = [seasonLabel, kindLabel];
     if (teams.trim()) parts.push(`${he ? "מועדפות" : "Favourites"}: ${teams.trim()}`);
     if (avoid.trim()) parts.push(`${he ? "לא רוצה" : "Avoid"}: ${avoid.trim()}`);
-    if (name.trim() || number.trim()) parts.push(`${name.trim()} ${number.trim()}`.trim());
     if (withPatch) parts.push(he ? "כולל פאץ' רשמי" : "With official patch");
+
 
     add({
       productId: box.id,
@@ -158,9 +156,10 @@ function MysteryBoxPage() {
           <h1 className="text-2xl font-extrabold sm:text-3xl">{he ? "מיסטרי בוקס" : "Mystery Box"}</h1>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             {he
-              ? "אתם בוחרים גודל והעדפות, ואנחנו שולחים חולצת כדורגל מסתורית בשווי גבוה מהמחיר ששילמתם. ההפתעה מובטחת — ואפשר גם שם ומספר על הגב."
-              : "Choose your size and preferences and we ship a surprise football jersey worth more than you paid. Personalisation available."}
+              ? "אתם בוחרים גודל והעדפות, ואנחנו שולחים חולצת כדורגל מסתורית בשווי גבוה מהמחיר ששילמתם. ההפתעה מובטחת."
+              : "Choose your size and preferences and we ship a surprise football jersey worth more than you paid."}
           </p>
+
 
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-3xl font-extrabold text-primary">{total} ₪</span>
@@ -242,23 +241,6 @@ function MysteryBoxPage() {
                   onChange={(e) => setAvoid(e.target.value)}
                   maxLength={60}
                   placeholder={he ? "לדוגמה: טוטנהאם" : "e.g. Tottenham"}
-                  className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2"
-                />
-              </label>
-              <label className="block text-sm">
-                <span className="font-bold">{he ? "שם על הגב (רשות)" : "Name on back (optional)"}</span>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  maxLength={14}
-                  className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2"
-                />
-              </label>
-              <label className="block text-sm">
-                <span className="font-bold">{he ? "מספר (רשות)" : "Number (optional)"}</span>
-                <input
-                  value={number}
-                  onChange={(e) => setNumber(e.target.value.replace(/\D/g, "").slice(0, 2))}
                   className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2"
                 />
               </label>
