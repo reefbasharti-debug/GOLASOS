@@ -105,7 +105,7 @@ export function Header({
       <div className="border-b">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-xs">
           <div className="flex items-center gap-4">
-            <Link to="/tracking" className="hover:text-accent-foreground hover:underline">
+            <Link to="/tracking" className="focus-key rounded px-1 hover:text-accent-foreground hover:underline">
               {t("tracking")}
             </Link>
             <button
@@ -138,7 +138,7 @@ export function Header({
       <div className="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-4 py-5 md:gap-8">
         <div className="flex items-center gap-2">
           <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger className="rounded-md p-2 hover:bg-secondary lg:hidden" aria-label={t("menu")}>
+            <SheetTrigger className="focus-key rounded-md p-2 hover:bg-secondary lg:hidden" aria-label={t("menu")}>
               <Menu className="size-5" />
             </SheetTrigger>
             <SheetContent side={lang === "he" ? "right" : "left"} className="w-80 overflow-y-auto">
@@ -205,18 +205,18 @@ export function Header({
               className="h-10 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
               aria-label={t("search_placeholder")}
             />
-            <button type="submit" className="grid size-9 place-items-center rounded-full text-primary hover:bg-secondary" aria-label="search">
+            <button type="submit" className="focus-key grid size-9 place-items-center rounded-full text-primary hover:bg-secondary" aria-label="search">
               <Search className="size-5" />
             </button>
           </div>
         </form>
 
         <div className="flex items-center gap-5">
-          <Link to="/auth" className="hidden items-center gap-1.5 text-xs font-medium hover:underline md:flex">
+          <Link to="/auth" className="focus-key hidden items-center gap-1.5 rounded px-1 text-xs font-medium hover:underline md:flex">
             <User className="size-4" />
             {t("sign_in")}
           </Link>
-          <Link to="/cart" className="relative" aria-label={t("cart")}>
+          <Link to="/cart" className="focus-key relative rounded-md p-1" aria-label={t("cart")}>
             <ShoppingCart className="size-6" />
             <span className="absolute -top-2 -end-2 grid size-4.5 min-w-4.5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
               {count}
@@ -228,7 +228,7 @@ export function Header({
       {/* Nav row */}
       <div className="mx-auto hidden max-w-7xl items-stretch px-4 lg:flex">
         <div className="group relative w-56 shrink-0">
-          <button className="flex h-12 w-full items-center justify-between bg-primary px-4 text-sm font-bold uppercase text-primary-foreground">
+          <button className="focus-key flex h-12 w-full items-center justify-between bg-primary px-4 text-sm font-bold uppercase text-primary-foreground">
             {t("all_categories")}
             <Menu className="size-5" />
           </button>
