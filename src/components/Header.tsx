@@ -66,7 +66,8 @@ export function Header({
 
   const groups = groupCategories(categories, groupMeta);
   const jerseyGroups = groups.filter((g) => g.kind !== "shoes");
-  const mainNav = jerseyGroups.slice(0, MAIN_NAV_LIMIT);
+  const specialGroup = groups.find((g) => g.name === SPECIAL_GROUP_NAME);
+  const mainNav = jerseyGroups.filter((g) => g.name !== SPECIAL_GROUP_NAME).slice(0, MAIN_NAV_LIMIT);
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
