@@ -263,18 +263,57 @@ export function Header({
             <Home className="size-3.5" />
             {t("home")}
           </Link>
+
+          <Link to="/shoes" className="nav-key my-1.5 flex items-center gap-1.5">
+            <Footprints className="size-3.5" />
+            {t("shoes")}
+          </Link>
+
+          {specialGroup ? (
+            <div key={specialGroup.name} className="group relative py-3">
+              <Link
+                to="/categories"
+                hash={`g-${encodeURIComponent(specialGroup.name)}`}
+                className="nav-key -my-1.5 flex items-center gap-1"
+              >
+                <Star className="size-3.5" />
+                {specialGroup.name} <ChevronDown className="size-3.5" />
+              </Link>
+              <div className="absolute start-0 top-full z-40 hidden w-[34rem] border bg-popover p-4 shadow-elevated group-hover:block">
+                <Link
+                  to="/mystery-box"
+                  className="mystery-glow mb-3 flex items-center justify-center gap-2 rounded-lg bg-navy px-4 py-2.5 text-sm font-extrabold text-white"
+                >
+                  <span className="relative">
+                    <Package className="size-4" />
+                    <HelpCircle className="absolute -bottom-1 -end-1 size-2.5 text-gold" />
+                  </span>
+                  {t("mystery_box")}
+                </Link>
+                <div className="grid grid-cols-3 gap-x-4 gap-y-1">
+                  {specialGroup.items.slice(0, 30).map((c) => (
+                    <Link
+                      key={c.slug}
+                      to="/category/$slug"
+                      params={{ slug: c.slug }}
+                      className="flex items-center gap-1.5 truncate py-0.5 text-xs font-medium hover:text-primary hover:underline"
+                    >
+                      {c.logo_url ? <img src={c.logo_url} alt="" className="size-4 object-contain" /> : null}
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           {mainNav.map((g) => (
             <div key={g.name} className="group relative py-3">
               <Link
                 to="/categories"
                 hash={`g-${encodeURIComponent(g.name)}`}
-                className={
-                  KEY_GROUPS.includes(g.name)
-                    ? "nav-key -my-1.5 flex items-center gap-1"
-                    : "flex items-center gap-1 hover:text-primary/70"
-                }
+                className="flex items-center gap-1 hover:text-primary/70"
               >
-                {KEY_GROUPS.includes(g.name) ? <Star className="size-3.5" /> : null}
                 {g.name} <ChevronDown className="size-3.5" />
               </Link>
               <div className="absolute start-0 top-full z-40 hidden w-[34rem] border bg-popover p-4 shadow-elevated group-hover:block">
@@ -294,17 +333,6 @@ export function Header({
               </div>
             </div>
           ))}
-          <Link to="/shoes" className="nav-key my-1.5 flex items-center gap-1.5">
-            <Footprints className="size-3.5" />
-            {t("shoes")}
-          </Link>
-          <Link
-            to="/mystery-box"
-            className="mystery-glow my-1.5 flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 font-extrabold text-accent-foreground"
-          >
-            <Sparkles className="size-4" />
-            {t("mystery_box")}
-          </Link>
         </nav>
       </div>
     </header>
