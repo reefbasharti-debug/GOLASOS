@@ -12,7 +12,7 @@ const orderSchema = z.object({
     .array(
       z.object({
         productId: z.string().uuid(),
-        size: z.string().trim().max(20).optional().or(z.literal("")),
+        size: z.string().trim().max(80).optional().or(z.literal("")),
         quantity: z.number().int().min(1).max(20),
       }),
     )
@@ -44,4 +44,25 @@ export const submitOrder = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { createOrder } = await import("./store.server");
     return createOrder(data);
+  });
+
+export const getHomeData = createServerFn({ method: "GET" }).handler(async () => {
+  const { loadHomeData } = await import("./store.server");
+  return loadHomeData();
+});
+
+export const searchCatalog = createServerFn({ method: "GET" })
+  .inputValidator((data: { q: string }) => z.object({ q: z.string().max(80) }).parse(data))
+  .handler(async ({ data }) => {
+    const { searchProducts } = await import("./store.server");
+    return searchProducts(data.q);
+  });
+
+export const lookupOrder = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) =>
+    z.object({ orderNumber: z.number().int().min(1).max(999999999), phone: z.string().trim().min(6).max(20) }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { trackOrder } = await import("./store.server");
+    return trackOrder(data.orderNumber, data.phone);
   });

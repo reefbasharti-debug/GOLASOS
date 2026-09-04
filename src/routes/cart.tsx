@@ -49,6 +49,7 @@ function CartPage() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">{item.name}</p>
                   {item.size ? <p className="text-xs text-muted-foreground">מידה: {item.size}</p> : null}
+                  {item.custom ? <p className="text-xs text-muted-foreground">הדפסה: {item.custom}</p> : null}
                   <p className="text-sm font-bold">{item.price} ₪</p>
                 </div>
                 <div className="flex items-center rounded-md border">

@@ -17,7 +17,9 @@ import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as OrderReceivedRouteImport } from './routes/order-received'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as ShoesRouteImport } from './routes/shoes'
+import { Route as TrackingRouteImport } from './routes/tracking'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
@@ -62,9 +64,19 @@ const OrderReceivedRoute = OrderReceivedRouteImport.update({
   path: '/order-received',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShoesRoute = ShoesRouteImport.update({
   id: '/shoes',
   path: '/shoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackingRoute = TrackingRouteImport.update({
+  id: '/tracking',
+  path: '/tracking',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -96,7 +108,9 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/order-received': typeof OrderReceivedRoute
+  '/search': typeof SearchRoute
   '/shoes': typeof ShoesRoute
+  '/tracking': typeof TrackingRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
@@ -110,7 +124,9 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/order-received': typeof OrderReceivedRoute
+  '/search': typeof SearchRoute
   '/shoes': typeof ShoesRoute
+  '/tracking': typeof TrackingRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
@@ -126,7 +142,9 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/order-received': typeof OrderReceivedRoute
+  '/search': typeof SearchRoute
   '/shoes': typeof ShoesRoute
+  '/tracking': typeof TrackingRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
@@ -142,7 +160,9 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/order-received'
+    | '/search'
     | '/shoes'
+    | '/tracking'
     | '/admin'
     | '/category/$slug'
     | '/product/$id'
@@ -156,7 +176,9 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/order-received'
+    | '/search'
     | '/shoes'
+    | '/tracking'
     | '/admin'
     | '/category/$slug'
     | '/product/$id'
@@ -171,7 +193,9 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/order-received'
+    | '/search'
     | '/shoes'
+    | '/tracking'
     | '/_authenticated/admin'
     | '/category/$slug'
     | '/product/$id'
@@ -187,7 +211,9 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   OrderReceivedRoute: typeof OrderReceivedRoute
+  SearchRoute: typeof SearchRoute
   ShoesRoute: typeof ShoesRoute
+  TrackingRoute: typeof TrackingRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductIdRoute: typeof ProductIdRoute
   ApiPublicImgRoute: typeof ApiPublicImgRoute
@@ -251,11 +277,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderReceivedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shoes': {
       id: '/shoes'
       path: '/shoes'
       fullPath: '/shoes'
       preLoaderRoute: typeof ShoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tracking': {
+      id: '/tracking'
+      path: '/tracking'
+      fullPath: '/tracking'
+      preLoaderRoute: typeof TrackingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -309,7 +349,9 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   OrderReceivedRoute: OrderReceivedRoute,
+  SearchRoute: SearchRoute,
   ShoesRoute: ShoesRoute,
+  TrackingRoute: TrackingRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductIdRoute: ProductIdRoute,
   ApiPublicImgRoute: ApiPublicImgRoute,

@@ -68,14 +68,22 @@ export async function loadCategoryPage(slug: string) {
 
   if (!category) return { category: null, products: [] };
 
-  const { data: products } = await sb
-    .from("products")
-    .select(PRODUCT_FIELDS)
-    .eq("category_id", category.id)
-    .eq("is_active", true)
-    .order("sort_order");
+  const [{ data: products }, { data: siblings }] = await Promise.all([
+    sb
+      .from("products")
+      .select(`${PRODUCT_FIELDS}, created_at` as const)
+      .eq("category_id", category.id)
+      .eq("is_active", true)
+      .order("sort_order"),
+    sb
+      .from("categories")
+      .select("slug, name")
+      .eq("is_active", true)
+      .eq("group_name", category.group_name)
+      .order("sort_order"),
+  ]);
 
-  return { category, products: products ?? [] };
+  return { category, products: products ?? [], siblings: siblings ?? [] };
 }
 
 export async function loadProduct(id: string) {
@@ -91,7 +99,7 @@ export async function loadProduct(id: string) {
 
   const [{ data: category }, { data: related }] = await Promise.all([
     product.category_id
-      ? sb.from("categories").select("id, slug, name").eq("id", product.category_id).maybeSingle()
+      ? sb.from("categories").select("id, slug, name, group_name, kind, logo_url").eq("id", product.category_id).maybeSingle()
       : Promise.resolve({ data: null }),
     sb
       .from("products")
@@ -99,10 +107,105 @@ export async function loadProduct(id: string) {
       .eq("is_active", true)
       .eq("category_id", product.category_id ?? "")
       .neq("id", product.id)
-      .limit(8),
+      .limit(28),
   ]);
 
-  return { product, category: category ?? null, related: related ?? [] };
+  const { data: alsoLike } = await sb
+    .from("products")
+    .select(PRODUCT_FIELDS)
+    .eq("is_active", true)
+    .eq("product_type", product.product_type)
+    .neq("id", product.id)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  return { product, category: category ?? null, related: related ?? [], alsoLike: alsoLike ?? [] };
+}
+
+function stripJoin<T extends { categories?: unknown }>(rows: T[] | null): Omit<T, "categories">[] {
+  return (rows ?? []).map(({ categories: _c, ...rest }) => rest);
+}
+
+export async function loadHomeData() {
+  const sb = publicClient();
+  const byKind = (kind: string, limit: number) =>
+    sb
+      .from("products")
+      .select(`${PRODUCT_FIELDS}, categories!inner(kind)` as const)
+      .eq("is_active", true)
+      .eq("categories.kind", kind)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+  const [newest, national, club, retro, shoes] = await Promise.all([
+    sb
+      .from("products")
+      .select(PRODUCT_FIELDS)
+      .eq("is_active", true)
+      .neq("product_type", "shoes")
+      .order("created_at", { ascending: false })
+      .limit(15),
+    byKind("national", 15),
+    byKind("club", 15),
+    byKind("retro", 15),
+    sb
+      .from("products")
+      .select(PRODUCT_FIELDS)
+      .eq("is_active", true)
+      .eq("product_type", "shoes")
+      .order("created_at", { ascending: false })
+      .limit(15),
+  ]);
+
+  return {
+    newest: newest.data ?? [],
+    national: stripJoin(national.data),
+    club: stripJoin(club.data),
+    retro: stripJoin(retro.data),
+    shoes: shoes.data ?? [],
+  };
+}
+
+export async function searchProducts(q: string) {
+  const sb = publicClient();
+  const term = q.replace(/[%_,]/g, " ").trim();
+  if (!term) return { products: [], categories: [] };
+  const [products, categories] = await Promise.all([
+    sb
+      .from("products")
+      .select(PRODUCT_FIELDS)
+      .eq("is_active", true)
+      .or(`name.ilike.%${term}%,supplier_model.ilike.%${term}%`)
+      .order("sort_order")
+      .limit(60),
+    sb.from("categories").select("slug, name, logo_url, image_url").eq("is_active", true).ilike("name", `%${term}%`).limit(12),
+  ]);
+  return { products: products.data ?? [], categories: categories.data ?? [] };
+}
+
+export async function trackOrder(orderNumber: number, phone: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const digits = phone.replace(/\D/g, "");
+  const { data: order } = await supabaseAdmin
+    .from("orders")
+    .select("id, order_number, status, total_ils, created_at, phone, customer_name")
+    .eq("order_number", orderNumber)
+    .maybeSingle();
+  if (!order || order.phone.replace(/\D/g, "").slice(-7) !== digits.slice(-7)) return { order: null, items: [] };
+  const { data: items } = await supabaseAdmin
+    .from("order_items")
+    .select("product_name, size, quantity, unit_price_ils")
+    .eq("order_id", order.id);
+  return {
+    order: {
+      orderNumber: order.order_number,
+      status: order.status,
+      total: Number(order.total_ils),
+      createdAt: order.created_at,
+      customerName: order.customer_name,
+    },
+    items: items ?? [],
+  };
 }
 
 type OrderInput = {

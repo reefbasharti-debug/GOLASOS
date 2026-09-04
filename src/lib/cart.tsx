@@ -7,6 +7,7 @@ export type CartItem = {
   price: number;
   size: string;
   quantity: number;
+  custom?: string;
 };
 
 type CartContextValue = {
@@ -44,7 +45,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const add = useCallback((item: CartItem) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.productId === item.productId && i.size === item.size);
+      const existing = prev.find(
+        (i) => i.productId === item.productId && i.size === item.size && (i.custom ?? "") === (item.custom ?? ""),
+      );
       if (existing) {
         return prev.map((i) =>
           i === existing ? { ...i, quantity: Math.min(20, i.quantity + item.quantity) } : i,

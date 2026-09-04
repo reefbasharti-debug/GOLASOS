@@ -1,11 +1,16 @@
 import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router";
-import { ProductCard } from "@/components/ProductCard";
+import { useState } from "react";
+import { ProductCard, type ProductCardData } from "@/components/ProductCard";
 import { CategoryTile, GroupBadge } from "@/components/CategoryTile";
+import { DEFAULT_SLIDES, HeroSlider } from "@/components/HeroSlider";
 import { groupCategories } from "@/lib/catalog";
+import { getHomeData } from "@/lib/store.functions";
+import { useLang, type TKey } from "@/lib/i18n";
 
 const rootApi = getRouteApi("__root__");
 
 export const Route = createFileRoute("/")({
+  loader: () => getHomeData(),
   head: () => ({
     meta: [
       { title: "גולאסוס | חולצות כדורגל ונעליים במשלוח לכל הארץ" },
@@ -24,97 +29,109 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const PER_GROUP = 8;
+type Tab = { key: TKey; items: ProductCardData[]; to: string };
 
-function Index() {
-  const { categories, groups, featured, settings } = rootApi.useLoaderData();
-  const jerseyGroups = groupCategories(
-    categories.filter((c) => c.kind !== "shoes"),
-    groups,
-  );
-  const shoeGroups = groupCategories(categories.filter((c) => c.kind === "shoes"));
-  const shoes = shoeGroups.flatMap((g) => g.items);
+function TabbedProducts({ tabs }: { tabs: Tab[] }) {
+  const { t } = useLang();
+  const [active, setActive] = useState(0);
+  const visible = tabs.filter((tb) => tb.items.length > 0);
+  if (visible.length === 0) return null;
+  const cur = visible[Math.min(active, visible.length - 1)]!;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6">
+    <section className="mt-12">
+      <div className="flex flex-wrap justify-center gap-x-10 gap-y-2 text-2xl font-light md:text-3xl">
+        {visible.map((tb, i) => (
+          <button
+            key={tb.key}
+            onClick={() => setActive(i)}
+            className={`border-b-2 pb-1 transition-colors ${
+              i === active ? "border-foreground text-foreground" : "border-transparent text-foreground/80 hover:text-foreground"
+            }`}
+          >
+            {t(tb.key)}
+          </button>
+        ))}
+      </div>
+      <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
+        {cur.items.slice(0, 15).map((p) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
+      </div>
+      <div className="mt-6 text-center">
+        <Link to={cur.to} className="inline-block border border-foreground px-8 py-2 text-sm font-semibold hover:bg-foreground hover:text-background">
+          {t("view_all")}
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function Index() {
+  const { categories, groups: groupMeta } = rootApi.useLoaderData();
+  const home = Route.useLoaderData();
+  const { lang, t } = useLang();
+  const jerseyGroups = groupCategories(
+    categories.filter((c) => c.kind !== "shoes"),
+    groupMeta,
+  );
+
+  return (
+    <div className="mx-auto max-w-7xl px-4">
       <h1 className="sr-only">גולאסוס - חולצות ונעלי כדורגל</h1>
 
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border bg-card px-4 py-3 text-sm">
-        <span className="font-bold">
-          חולצות <span className="text-primary">{settings["jersey_price"] ?? "65"} ₪</span>
-        </span>
-        <span className="font-bold">
-          נעליים <span className="text-primary">{settings["shoe_price"] ?? "350"} ₪</span>
-        </span>
-        <span className="text-muted-foreground">משלוח לכל הארץ</span>
-        <nav className="mr-auto flex flex-wrap gap-2 text-xs font-semibold">
-          {jerseyGroups.map((g) => (
-            <a
-              key={g.name}
-              href={`#g-${encodeURIComponent(g.name)}`}
-              className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 hover:bg-secondary"
-            >
-              <GroupBadge name={g.name} image={g.image_url} className="h-4 w-4" />
-              {g.name}
-            </a>
-          ))}
-          <a href="#shoes" className="rounded-full surface-gold px-2.5 py-1">
-            נעלי כדורגל
-          </a>
-        </nav>
-      </div>
+      <HeroSlider slides={DEFAULT_SLIDES[lang]} />
 
-      {jerseyGroups.map((g) => (
-        <section key={g.name} id={`g-${encodeURIComponent(g.name)}`} className="mt-8 scroll-mt-20">
-          <div className="mb-3 flex items-end justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-bold">
-              <GroupBadge name={g.name} image={g.image_url} className="h-7 w-7" />
-              {g.name}
-            </h2>
-            {g.items.length > PER_GROUP ? (
-              <Link
-                to="/categories"
-                hash={`g-${encodeURIComponent(g.name)}`}
-                className="text-xs font-semibold text-muted-foreground hover:text-foreground"
-              >
-                כל {g.items.length} הקבוצות
-              </Link>
-            ) : null}
+      <TabbedProducts
+        tabs={[
+          { key: "new_arrivals", items: home.newest, to: "/categories" },
+          { key: "national_teams", items: home.national, to: "/categories" },
+          { key: "retro", items: home.retro, to: "/categories" },
+          { key: "shoes", items: home.shoes, to: "/shoes" },
+        ]}
+      />
+
+      {/* League tiles with crests */}
+      {jerseyGroups.slice(0, 6).map((g) => (
+        <section key={g.name} id={`g-${encodeURIComponent(g.name)}`} className="mt-12 scroll-mt-20">
+          <div className="mb-4 flex items-center justify-center gap-3 text-2xl font-light md:text-3xl">
+            <GroupBadge name={g.name} image={g.image_url} className="h-9 w-9" />
+            <h2>{g.name}</h2>
           </div>
-          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-8">
-            {g.items.slice(0, PER_GROUP).map((c) => (
+          <div className="grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-8">
+            {g.items.slice(0, 8).map((c) => (
               <CategoryTile key={c.slug} slug={c.slug} name={c.name} image={c.image_url} logo={c.logo_url} />
             ))}
           </div>
+          {g.items.length > 8 ? (
+            <div className="mt-4 text-center">
+              <Link
+                to="/categories"
+                hash={`g-${encodeURIComponent(g.name)}`}
+                className="text-sm font-semibold underline-offset-4 hover:underline"
+              >
+                {t("view_all")} ({g.items.length})
+              </Link>
+            </div>
+          ) : null}
         </section>
       ))}
 
-      {shoes.length > 0 ? (
-        <section id="shoes" className="mt-8 scroll-mt-20">
-          <div className="mb-3 flex items-end justify-between">
-            <h2 className="text-lg font-bold">נעלי כדורגל</h2>
-            <Link to="/shoes" className="text-xs font-semibold text-muted-foreground hover:text-foreground">
-              כל {shoes.length} הסדרות
-            </Link>
-          </div>
-          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-8">
-            {shoes.slice(0, 16).map((c) => (
-              <CategoryTile key={c.slug} slug={c.slug} name={c.name} image={c.image_url} />
-            ))}
-          </div>
-        </section>
-      ) : null}
+      <TabbedProducts tabs={[{ key: "clubs", items: home.club, to: "/categories" }]} />
 
-      {featured.length > 0 ? (
-        <section className="mt-10">
-          <h2 className="mb-3 text-lg font-bold">מוצרים נבחרים</h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {featured.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-        </section>
-      ) : null}
+      <section className="mt-12">
+        <h2 className="text-center text-2xl font-light md:text-3xl">{t("football_boots")}</h2>
+        <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
+          {home.shoes.slice(0, 10).map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+        <div className="mt-6 text-center">
+          <Link to="/shoes" className="inline-block border border-foreground px-8 py-2 text-sm font-semibold hover:bg-foreground hover:text-background">
+            {t("view_all")}
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }
