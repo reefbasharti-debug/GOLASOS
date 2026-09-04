@@ -67,7 +67,11 @@ function CheckoutPage() {
       const result = await send({
         data: {
           ...parsed.data,
-          items: items.map((i) => ({ productId: i.productId, size: i.size, quantity: i.quantity })),
+          items: items.map((i) => ({
+            productId: i.productId,
+            size: i.custom ? `${i.size} | ${i.custom}` : i.size,
+            quantity: i.quantity,
+          })),
         },
       });
       clear();

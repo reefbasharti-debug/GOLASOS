@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { getStoreData } from "@/lib/store.functions";
 import { CartProvider } from "@/lib/cart";
+import { LangProvider } from "@/lib/i18n";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
@@ -122,17 +123,19 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <LangProvider>
       <CartProvider>
-        <div className="flex min-h-screen flex-col">
-          <Header categories={data?.categories ?? []} />
+        <div className="flex min-h-screen flex-col overflow-x-clip">
+          <Header categories={data?.categories ?? []} groups={data?.groups ?? []} settings={data?.settings ?? {}} />
           <main className="flex-1">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </main>
-          <Footer settings={data?.settings ?? {}} />
+          <Footer settings={data?.settings ?? {}} groups={data?.groups ?? []} />
         </div>
         <Toaster position="top-center" richColors />
       </CartProvider>
+      </LangProvider>
     </QueryClientProvider>
   );
 }
