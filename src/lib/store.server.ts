@@ -74,6 +74,7 @@ export async function loadCategoryPage(slug: string) {
       .select(`${PRODUCT_FIELDS}, created_at` as const)
       .eq("category_id", category.id)
       .eq("is_active", true)
+      .order("home_rank", { ascending: false })
       .order("sort_order"),
     sb
       .from("categories")
@@ -214,6 +215,7 @@ export async function searchProducts(q: string) {
       .select(PRODUCT_FIELDS)
       .eq("is_active", true)
       .or(`name.ilike.%${term}%,supplier_model.ilike.%${term}%`)
+      .order("home_rank", { ascending: false })
       .order("sort_order")
       .limit(60),
     sb.from("categories").select("slug, name, logo_url, image_url").eq("is_active", true).ilike("name", `%${term}%`).limit(12),
