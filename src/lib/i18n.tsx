@@ -46,6 +46,7 @@ const DICT = {
   custom_number: ["מספר", "Number"],
   in_stock: ["במלאי", "In Stock"],
   add_to_cart: ["הוספה לעגלה", "Add to Cart"],
+  view_product: ["צפייה במוצר", "View Product"],
   buy_now: ["קנייה עכשיו", "Buy Now"],
   choose_size: ["יש לבחור מידה", "Please choose a size"],
   added_to_cart: ["המוצר נוסף לעגלה", "Added to cart"],
