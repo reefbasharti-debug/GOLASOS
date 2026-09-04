@@ -1,5 +1,4 @@
-import {
-  loadShoes, createServerFn } from "@tanstack/react-start";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 const orderSchema = z.object({
@@ -79,4 +78,7 @@ export const getShoes = createServerFn({ method: "GET" })
       })
       .parse(data),
   )
-  .handler(({ data }) => loadShoes(data));
+  .handler(async ({ data }) => {
+    const { loadShoes } = await import("./store.server");
+    return loadShoes(data);
+  });
