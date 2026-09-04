@@ -11,12 +11,12 @@ export type Slide = { image: string; title: string; subtitle: string; to: string
 export const DEFAULT_SLIDES: { he: Slide[]; en: Slide[] } = {
   he: [
     { image: hero1, title: "חולצות כדורגל 65 ₪", subtitle: "כל הקבוצות, כל הנבחרות, כל העונות", to: "/categories", cta: "לכל הקבוצות" },
-    { image: hero2, title: "נעלי כדורגל 350 ₪", subtitle: "נייקי, אדידס, פומה ועוד – בכל המידות", to: "/shoes", cta: "לנעליים" },
+    { image: hero2, title: "נעלי כדורגל מ-300 ₪", subtitle: "נייקי, אדידס, פומה ועוד – בכל המידות", to: "/shoes", cta: "לנעליים" },
     { image: hero3, title: "נבחרות לאומיות", subtitle: "המדים של מונדיאל 2026 כבר כאן", to: "/categories", cta: "לנבחרות" },
   ],
   en: [
     { image: hero1, title: "Football jerseys 65 ₪", subtitle: "Every club, every national team, every season", to: "/categories", cta: "Shop teams" },
-    { image: hero2, title: "Football boots 350 ₪", subtitle: "Nike, adidas, Puma and more – all sizes", to: "/shoes", cta: "Shop boots" },
+    { image: hero2, title: "Football boots from 300 ₪", subtitle: "Nike, adidas, Puma and more – all sizes", to: "/shoes", cta: "Shop boots" },
     { image: hero3, title: "National teams", subtitle: "World Cup 2026 kits are here", to: "/categories", cta: "Shop national" },
   ],
 };
