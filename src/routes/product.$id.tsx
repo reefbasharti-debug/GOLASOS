@@ -203,7 +203,7 @@ function ProductPage() {
             >
               {t("add_to_cart")}
             </button>
-            <button onClick={() => addToCart(true)} className="h-12 bg-accent text-sm font-bold text-accent-foreground shadow-md hover:brightness-95">
+            <button onClick={() => addToCart(true)} className="btn-critical h-12 rounded-md text-sm">
               {t("buy_now")}
             </button>
           </div>

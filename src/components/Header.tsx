@@ -156,7 +156,7 @@ export function Header({
                           <Link
                             to="/mystery-box"
                             onClick={() => setOpen(false)}
-                            className="mystery-glow mb-2 flex items-center gap-2 rounded-lg bg-navy px-2 py-1.5 text-sm font-extrabold text-white"
+                            className="mystery-glow mb-2 flex items-center gap-2 rounded-lg border border-gold/60 bg-navy px-2 py-2 text-sm font-extrabold text-white"
                           >
                             <span className="relative">
                               <Package className="size-4" />

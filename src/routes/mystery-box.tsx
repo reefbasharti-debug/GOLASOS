@@ -305,7 +305,7 @@ function MysteryBoxPage() {
               <button
                 type="button"
                 onClick={() => addToCart(true)}
-                className="flex-1 rounded-md bg-accent px-6 py-3 font-bold text-accent-foreground transition hover:opacity-90"
+                className="btn-critical flex-1 rounded-md px-6 py-3"
               >
                 {t("buy_now")}
               </button>
