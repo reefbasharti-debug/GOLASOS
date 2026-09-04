@@ -20,7 +20,7 @@ function publicClient() {
 }
 
 const PRODUCT_FIELDS =
-  "id, name, image_url, price_ils, product_type, sizes, category_id, supplier_model, description, extra_images, is_featured, sort_order";
+  "id, name, image_url, price_ils, product_type, sizes, category_id, supplier_model, description, extra_images, is_featured, sort_order, shoe_tier, color, home_rank";
 
 export async function loadSettings(): Promise<Record<string, string>> {
   const sb = publicClient();
@@ -134,15 +134,19 @@ export async function loadHomeData() {
       .select(`${PRODUCT_FIELDS}, categories!inner(kind)` as const)
       .eq("is_active", true)
       .eq("categories.kind", kind)
+      .order("home_rank", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(limit);
 
   const [newest, national, club, retro, shoes] = await Promise.all([
+    // newest season jerseys (2026/27) first
     sb
       .from("products")
       .select(PRODUCT_FIELDS)
       .eq("is_active", true)
       .neq("product_type", "shoes")
+      .or("name.ilike.%2026%,name.ilike.%2027%,name.ilike.%26/27%,name.ilike.%26-27%")
+      .order("home_rank", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(15),
     byKind("national", 15),
@@ -153,6 +157,7 @@ export async function loadHomeData() {
       .select(PRODUCT_FIELDS)
       .eq("is_active", true)
       .eq("product_type", "shoes")
+      .order("home_rank", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(15),
   ]);
@@ -163,6 +168,39 @@ export async function loadHomeData() {
     club: stripJoin(club.data),
     retro: stripJoin(retro.data),
     shoes: shoes.data ?? [],
+  };
+}
+
+export type ShoeFilters = { model?: string; color?: string; size?: string; tier?: string };
+
+export async function loadShoes(f: ShoeFilters) {
+  const sb = publicClient();
+  let q = sb
+    .from("products")
+    .select(`${PRODUCT_FIELDS}, created_at` as const)
+    .eq("is_active", true)
+    .eq("product_type", "shoes");
+  if (f.model) q = q.eq("category_id", f.model);
+  if (f.color) q = q.eq("color", f.color);
+  if (f.tier) q = q.eq("shoe_tier", f.tier);
+  if (f.size) q = q.contains("sizes", [f.size]);
+  const [{ data }, facets] = await Promise.all([
+    q.order("home_rank", { ascending: false }).order("created_at", { ascending: false }).limit(300),
+    sb.from("products").select("color, sizes, shoe_tier, category_id").eq("is_active", true).eq("product_type", "shoes"),
+  ]);
+  const colors = new Map<string, number>();
+  const sizes = new Set<string>();
+  const models = new Map<string, number>();
+  for (const r of facets.data ?? []) {
+    if (r.color) colors.set(r.color, (colors.get(r.color) ?? 0) + 1);
+    for (const sz of r.sizes ?? []) sizes.add(sz);
+    if (r.category_id) models.set(r.category_id, (models.get(r.category_id) ?? 0) + 1);
+  }
+  return {
+    products: data ?? [],
+    colors: [...colors.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c),
+    sizes: [...sizes].sort((a, b) => Number(a) - Number(b)),
+    modelCounts: Object.fromEntries(models),
   };
 }
 
