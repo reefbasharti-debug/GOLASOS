@@ -52,7 +52,15 @@ function TabbedProducts({ tabs }: { tabs: Tab[] }) {
             {t(tb.key)}
           </button>
         ))}
+        <Link
+          to="/mystery-box"
+          className="btn-critical-sm focus-key inline-flex items-center gap-2 rounded-full px-5 py-1.5 text-base font-semibold md:text-lg"
+        >
+          <Package className="size-4" aria-hidden />
+          {t("mystery_box")}
+        </Link>
       </div>
+
       <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
         {cur.items.slice(0, 15).map((p) => (
           <ProductCard key={p.id} product={p} />
