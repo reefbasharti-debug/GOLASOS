@@ -48,6 +48,8 @@ function CheckoutPage() {
 
 
   const field = (key: keyof typeof form) => ({
+    name: key,
+    id: `checkout-${key}`,
     value: form[key],
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setForm((f) => ({ ...f, [key]: e.target.value })),
