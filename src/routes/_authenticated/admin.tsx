@@ -12,7 +12,9 @@ import {
   saveProduct,
   saveSettings,
   updateOrderStatus,
+  updatePaymentStatus,
 } from "@/lib/admin.functions";
+import { CustomersTab, PAYMENT_LABEL, PaymentBadge } from "@/components/admin/CustomersTab";
 import { imageUrl } from "@/lib/img";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -96,6 +98,7 @@ function AdminPage() {
       <Tabs defaultValue="orders" className="mt-6">
         <TabsList>
           <TabsTrigger value="orders">הזמנות ({data.orders.length})</TabsTrigger>
+          <TabsTrigger value="customers">לקוחות ({data.customers.length})</TabsTrigger>
           <TabsTrigger value="products">מוצרים ({data.products.length})</TabsTrigger>
           <TabsTrigger value="categories">קטגוריות ({data.categories.length})</TabsTrigger>
           <TabsTrigger value="settings">הגדרות והתראות</TabsTrigger>
@@ -103,6 +106,9 @@ function AdminPage() {
 
         <TabsContent value="orders">
           <OrdersTab data={data} onChange={refetch} />
+        </TabsContent>
+        <TabsContent value="customers">
+          <CustomersTab data={data} onChange={refetch} />
         </TabsContent>
         <TabsContent value="products">
           <ProductsTab data={data} onChange={refetch} />
@@ -122,6 +128,18 @@ type Overview = Awaited<ReturnType<typeof getAdminOverview>>;
 
 function OrdersTab({ data, onChange }: { data: Overview; onChange: () => void }) {
   const setStatus = useServerFn(updateOrderStatus);
+  const setPayment = useServerFn(updatePaymentStatus);
+  const [filter, setFilter] = useState<"all" | "unpaid" | "paid">("all");
+
+  const updatePayment = async (id: string, payment_status: string) => {
+    try {
+      await setPayment({ data: { id, payment_status: payment_status as "paid" } });
+      toast.success("סטטוס התשלום עודכן");
+      onChange();
+    } catch {
+      toast.error("עדכון התשלום נכשל");
+    }
+  };
 
   const update = async (id: string, status: string) => {
     try {
@@ -137,9 +155,22 @@ function OrdersTab({ data, onChange }: { data: Overview; onChange: () => void })
     return <p className="py-10 text-center text-muted-foreground">אין הזמנות עדיין.</p>;
   }
 
+  const orders = data.orders.filter((o) => (filter === "all" ? true : o.payment_status === filter));
+
   return (
     <div className="mt-4 space-y-3">
-      {data.orders.map((order) => {
+      <div className="flex gap-2 text-sm">
+        {(["all", "unpaid", "paid"] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`rounded-full border px-3 py-1 font-semibold ${filter === f ? "bg-primary text-primary-foreground" : ""}`}
+          >
+            {f === "all" ? "הכל" : PAYMENT_LABEL[f]}
+          </button>
+        ))}
+      </div>
+      {orders.map((order) => {
         const items = data.orderItems.filter((i) => i.order_id === order.id);
         return (
           <div key={order.id} className="rounded-lg border bg-card p-4">
@@ -158,9 +189,23 @@ function OrdersTab({ data, onChange }: { data: Overview; onChange: () => void })
                   {new Date(order.created_at).toLocaleString("he-IL")}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <p className="font-extrabold">{Number(order.total_ils)} ₪</p>
+                <PaymentBadge status={order.payment_status} />
                 <select
+                  aria-label="סטטוס תשלום"
+                  value={order.payment_status}
+                  onChange={(e) => updatePayment(order.id, e.target.value)}
+                  className="rounded-md border bg-background px-2 py-1 text-sm"
+                >
+                  {Object.entries(PAYMENT_LABEL).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  aria-label="סטטוס הזמנה"
                   value={order.status}
                   onChange={(e) => update(order.id, e.target.value)}
                   className="rounded-md border bg-background px-2 py-1 text-sm"
