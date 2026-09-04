@@ -154,10 +154,10 @@
 
 @keyframes mystery-pulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 hsl(var(--accent) / 0.55), 0 0 12px 2px hsl(var(--accent) / 0.5);
+    box-shadow: 0 0 0 0 rgb(244 208 63 / 0.55), 0 0 12px 2px rgb(244 208 63 / 0.5);
   }
   50% {
-    box-shadow: 0 0 0 6px hsl(var(--accent) / 0), 0 0 22px 6px hsl(var(--accent) / 0.85);
+    box-shadow: 0 0 0 6px rgb(244 208 63 / 0), 0 0 22px 6px rgb(244 208 63 / 0.85);
   }
 }
 
