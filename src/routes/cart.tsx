@@ -24,7 +24,7 @@ function CartPage() {
       {items.length === 0 ? (
         <div className="mt-10 rounded-lg border bg-card p-10 text-center">
           <p className="text-muted-foreground">העגלה ריקה.</p>
-          <Link to="/categories" className="mt-4 inline-block rounded-md surface-gold px-5 py-2 font-bold">
+          <Link to="/categories" className="btn-critical mt-4 inline-flex rounded-md px-5 py-3 font-bold">
             לקטלוג המוצרים
           </Link>
         </div>
@@ -54,7 +54,7 @@ function CartPage() {
                 </div>
                 <div className="flex items-center rounded-md border">
                   <button
-                    className="px-2 py-1"
+                    className="focus-key px-3 py-2"
                     onClick={() => setQuantity(item.productId, item.size, item.quantity - 1)}
                     aria-label="הפחתת כמות"
                   >
@@ -62,7 +62,7 @@ function CartPage() {
                   </button>
                   <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
                   <button
-                    className="px-2 py-1"
+                    className="focus-key px-3 py-2"
                     onClick={() => setQuantity(item.productId, item.size, item.quantity + 1)}
                     aria-label="הוספת כמות"
                   >
@@ -71,7 +71,7 @@ function CartPage() {
                 </div>
                 <button
                   onClick={() => remove(item.productId, item.size)}
-                  className="text-xs font-semibold text-destructive"
+                  className="focus-key rounded px-2 py-2 text-xs font-semibold text-destructive"
                 >
                   הסרה
                 </button>
@@ -83,7 +83,7 @@ function CartPage() {
             <p className="text-lg font-bold">סה"כ: {total} ₪</p>
             <Link
               to="/checkout"
-              className="rounded-md surface-gold px-6 py-3 text-sm font-bold shadow-md transition-transform hover:scale-[1.02]"
+              className="btn-critical rounded-md px-6 py-3 text-sm"
             >
               מעבר להזמנה
             </Link>

@@ -189,9 +189,9 @@ function ProductPage() {
           <div className="mt-5 flex items-center gap-4 text-sm">
             <span>{t("quantity")}</span>
             <div className="flex items-center border">
-              <button className="px-3 py-1.5" onClick={() => setQuantity((q) => Math.max(1, q - 1))} aria-label="-">−</button>
+              <button className="focus-key px-3 py-2.5" onClick={() => setQuantity((q) => Math.max(1, q - 1))} aria-label="-">−</button>
               <span className="w-10 text-center font-bold">{quantity}</span>
-              <button className="px-3 py-1.5" onClick={() => setQuantity((q) => Math.min(20, q + 1))} aria-label="+">+</button>
+              <button className="focus-key px-3 py-2.5" onClick={() => setQuantity((q) => Math.min(20, q + 1))} aria-label="+">+</button>
             </div>
             <span className="text-muted-foreground">{t("in_stock")}</span>
           </div>
@@ -199,7 +199,7 @@ function ProductPage() {
           <div className="mt-6 grid grid-cols-2 gap-3">
             <button
               onClick={() => addToCart(false)}
-              className="h-12 border-2 border-primary text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+              className="btn-critical-ghost h-12 text-sm"
             >
               {t("add_to_cart")}
             </button>
