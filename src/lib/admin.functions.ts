@@ -60,12 +60,15 @@ export const saveProduct = createServerFn({ method: "POST" })
         is_featured: z.boolean().optional(),
         description: z.string().max(2000).optional(),
         sizes: z.array(z.string().max(20)).max(30).optional(),
+        shoe_tier: z.enum(["pro", "semi", "regular"]).nullable().optional(),
+        color: z.string().trim().max(20).nullable().optional(),
+        home_rank: z.number().int().min(0).max(1000).optional(),
       })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
     const { id, ...raw } = data;
-    const patch: Record<string, string | number | boolean | string[]> = {};
+    const patch: Record<string, string | number | boolean | string[] | null> = {};
     for (const [k, v] of Object.entries(raw)) if (v !== undefined) patch[k] = v;
     const { error } = await context.supabase.from("products").update(patch as never).eq("id", id);
     if (error) throw new Error(error.message);
@@ -99,13 +102,12 @@ export const saveCategory = createServerFn({ method: "POST" })
 export const bulkSetPrice = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({ productType: z.enum(["jersey", "shoes"]), price: z.number().min(0).max(100000) }).parse(data),
+    z.object({ productType: z.enum(["jersey", "shoes"]), tier: z.enum(["pro", "semi", "regular"]).optional(), price: z.number().min(0).max(100000) }).parse(data),
   )
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("products")
-      .update({ price_ils: data.price })
-      .eq("product_type", data.productType);
+    let q = context.supabase.from("products").update({ price_ils: data.price }).eq("product_type", data.productType);
+    if (data.tier) q = q.eq("shoe_tier", data.tier);
+    const { error } = await q;
     if (error) throw new Error(error.message);
     return { ok: true };
   });

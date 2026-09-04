@@ -194,7 +194,7 @@ function ProductsTab({ data, onChange }: { data: Overview; onChange: () => void 
   const bulk = useServerFn(bulkSetPrice);
   const [search, setSearch] = useState("");
   const [jerseyPrice, setJerseyPrice] = useState("65");
-  const [shoePrice, setShoePrice] = useState("350");
+  const [tierPrices, setTierPrices] = useState<Record<"pro" | "semi" | "regular", string>>({ pro: "450", semi: "400", regular: "300" });
 
   const filtered = data.products
     .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
@@ -210,14 +210,14 @@ function ProductsTab({ data, onChange }: { data: Overview; onChange: () => void 
     }
   };
 
-  const applyBulk = async (productType: "jersey" | "shoes", price: string) => {
+  const applyBulk = async (productType: "jersey" | "shoes", price: string, tier?: "pro" | "semi" | "regular") => {
     const value = Number(price);
     if (!Number.isFinite(value) || value < 0) {
       toast.error("מחיר לא תקין");
       return;
     }
     try {
-      await bulk({ data: { productType, price: value } });
+      await bulk({ data: { productType, price: value, tier } });
       toast.success("המחירים עודכנו");
       onChange();
     } catch {
@@ -242,20 +242,27 @@ function ProductsTab({ data, onChange }: { data: Overview; onChange: () => void 
         >
           עדכון חולצות
         </button>
-        <div>
-          <label className="mb-1 block text-xs font-semibold">מחיר לכל הנעליים</label>
-          <input
-            value={shoePrice}
-            onChange={(e) => setShoePrice(e.target.value)}
-            className="w-24 rounded-md border bg-background px-2 py-1"
-          />
-        </div>
-        <button
-          onClick={() => applyBulk("shoes", shoePrice)}
-          className="rounded-md surface-gold px-4 py-2 text-sm font-bold"
-        >
-          עדכון נעליים
-        </button>
+        {(
+          [
+            ["pro", "נעליים מקצועיות"],
+            ["semi", "נעליים חצי מקצועיות"],
+            ["regular", "נעליים רגילות"],
+          ] as const
+        ).map(([tier, label]) => (
+          <div key={tier} className="flex items-end gap-2">
+            <div>
+              <label className="mb-1 block text-xs font-semibold">{label}</label>
+              <input
+                value={tierPrices[tier]}
+                onChange={(e) => setTierPrices((tp) => ({ ...tp, [tier]: e.target.value }))}
+                className="w-24 rounded-md border bg-background px-2 py-1"
+              />
+            </div>
+            <button onClick={() => applyBulk("shoes", tierPrices[tier], tier)} className="rounded-md surface-gold px-4 py-2 text-sm font-bold">
+              עדכון
+            </button>
+          </div>
+        ))}
       </div>
 
       <input
@@ -291,6 +298,34 @@ function ProductsTab({ data, onChange }: { data: Overview; onChange: () => void 
                 patch(p.id, { price_ils: Number(e.target.value) })
               }
               className="w-24 rounded-md border px-2 py-1 text-sm"
+            />
+            {p.product_type === "shoes" ? (
+              <>
+                <select
+                  defaultValue={p.shoe_tier ?? ""}
+                  onChange={(e) => patch(p.id, { shoe_tier: e.target.value || null })}
+                  className="rounded-md border px-2 py-1 text-sm"
+                  title="רמת הנעל"
+                >
+                  <option value="">ללא רמה</option>
+                  <option value="pro">מקצועית</option>
+                  <option value="semi">חצי מקצועית</option>
+                  <option value="regular">רגילה</option>
+                </select>
+                <input
+                  defaultValue={p.color ?? ""}
+                  placeholder="צבע"
+                  onBlur={(e) => (e.target.value || null) !== (p.color ?? null) && patch(p.id, { color: e.target.value || null })}
+                  className="w-20 rounded-md border px-2 py-1 text-sm"
+                />
+              </>
+            ) : null}
+            <input
+              type="number"
+              defaultValue={p.home_rank}
+              title="עדיפות בדף הבית (גבוה = מוצג קודם)"
+              onBlur={(e) => Number(e.target.value) !== p.home_rank && patch(p.id, { home_rank: Number(e.target.value) })}
+              className="w-16 rounded-md border px-2 py-1 text-sm"
             />
             <label className="flex items-center gap-1 text-xs font-semibold">
               <input
