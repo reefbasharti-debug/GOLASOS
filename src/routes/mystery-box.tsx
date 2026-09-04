@@ -80,7 +80,7 @@ function MysteryBoxPage() {
     }
     const seasonLabel = SEASONS.find((s) => s[0] === season)![he ? 1 : 2];
     const kindLabel = KINDS.find((k) => k[0] === kind)![he ? 1 : 2];
-    const parts = [seasonLabel, kindLabel];
+    const parts: string[] = [seasonLabel, kindLabel];
     if (teams.trim()) parts.push(`${he ? "מועדפות" : "Favourites"}: ${teams.trim()}`);
     if (avoid.trim()) parts.push(`${he ? "לא רוצה" : "Avoid"}: ${avoid.trim()}`);
     if (name.trim() || number.trim()) parts.push(`${name.trim()} ${number.trim()}`.trim());
