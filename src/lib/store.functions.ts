@@ -8,6 +8,8 @@ const orderSchema = z.object({
   city: z.string().trim().max(80).optional().or(z.literal("")),
   address: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(600).optional().or(z.literal("")),
+  shipping: z.enum(["free", "express"]).default("free"),
+
   items: z
     .array(
       z.object({
