@@ -164,3 +164,26 @@
 .mystery-glow {
   animation: mystery-pulse 1.8s ease-in-out infinite;
 }
+
+/* Highlighted "critical" navigation entries (home, special collections, shoes) */
+@utility nav-key {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, var(--accent) 55%, transparent);
+  background: color-mix(in oklab, var(--accent) 16%, transparent);
+  padding: 0.375rem 0.85rem;
+  font-weight: 800;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+
+  &:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px -6px rgb(244 208 63 / 0.85);
+  }
+}
