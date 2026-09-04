@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.link_order_customer() FROM PUBLIC, anon, authenticated;
