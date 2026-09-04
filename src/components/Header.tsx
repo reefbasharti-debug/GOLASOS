@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, Sparkles, Home, Footprints, Star, Facebook, Instagram, Menu, Search, ShoppingCart, Twitter, User, Youtube, X, MessageCircle } from "lucide-react";
+import { ChevronDown, Home, Footprints, Star, Package, HelpCircle, Facebook, Instagram, Menu, Search, ShoppingCart, Twitter, User, Youtube, X, MessageCircle } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
@@ -46,8 +46,7 @@ export function Logo({ className = "" }: { className?: string }) {
 }
 
 const MAIN_NAV_LIMIT = 7;
-/** Category groups that get the highlighted "key button" styling in the main nav. */
-const KEY_GROUPS: string[] = ["קולקציות מיוחדות"];
+const SPECIAL_GROUP_NAME = "קולקציות מיוחדות";
 
 export function Header({
   categories,
@@ -67,7 +66,8 @@ export function Header({
 
   const groups = groupCategories(categories, groupMeta);
   const jerseyGroups = groups.filter((g) => g.kind !== "shoes");
-  const mainNav = jerseyGroups.slice(0, MAIN_NAV_LIMIT);
+  const specialGroup = groups.find((g) => g.name === SPECIAL_GROUP_NAME);
+  const mainNav = jerseyGroups.filter((g) => g.name !== SPECIAL_GROUP_NAME).slice(0, MAIN_NAV_LIMIT);
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -144,14 +144,6 @@ export function Header({
             <SheetContent side={lang === "he" ? "right" : "left"} className="w-80 overflow-y-auto">
               <SheetTitle>{t("all_categories")}</SheetTitle>
               <nav className="mt-4 space-y-1 pb-10">
-                <Link
-                  to="/mystery-box"
-                  onClick={() => setOpen(false)}
-                  className="mystery-glow mb-3 flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-2 font-extrabold text-accent-foreground"
-                >
-                  <Sparkles className="size-4" />
-                  {t("mystery_box")}
-                </Link>
                 {groups.map((g) => (
                   <details key={g.name} className="group">
                     <summary className="flex cursor-pointer list-none items-center gap-2 rounded px-2 py-1.5 text-sm font-bold hover:bg-secondary">
@@ -159,6 +151,21 @@ export function Header({
                       {g.name} <span className="text-xs opacity-70">({g.items.length})</span>
                     </summary>
                     <ul className="mt-1 space-y-0.5 ps-4">
+                      {g.name === SPECIAL_GROUP_NAME ? (
+                        <li>
+                          <Link
+                            to="/mystery-box"
+                            onClick={() => setOpen(false)}
+                            className="mystery-glow mb-2 flex items-center gap-2 rounded-lg bg-navy px-2 py-1.5 text-sm font-extrabold text-white"
+                          >
+                            <span className="relative">
+                              <Package className="size-4" />
+                              <HelpCircle className="absolute -bottom-1 -end-1 size-2.5 text-gold" />
+                            </span>
+                            {t("mystery_box")}
+                          </Link>
+                        </li>
+                      ) : null}
                       {g.items.map((c) => (
                         <li key={c.slug}>
                           <Link
@@ -256,18 +263,57 @@ export function Header({
             <Home className="size-3.5" />
             {t("home")}
           </Link>
+
+          <Link to="/shoes" className="nav-key my-1.5 flex items-center gap-1.5">
+            <Footprints className="size-3.5" />
+            {t("shoes")}
+          </Link>
+
+          {specialGroup ? (
+            <div key={specialGroup.name} className="group relative py-3">
+              <Link
+                to="/categories"
+                hash={`g-${encodeURIComponent(specialGroup.name)}`}
+                className="nav-key -my-1.5 flex items-center gap-1"
+              >
+                <Star className="size-3.5" />
+                {specialGroup.name} <ChevronDown className="size-3.5" />
+              </Link>
+              <div className="absolute start-0 top-full z-40 hidden w-[34rem] border bg-popover p-4 shadow-elevated group-hover:block">
+                <Link
+                  to="/mystery-box"
+                  className="mystery-glow mb-3 flex items-center justify-center gap-2 rounded-lg bg-navy px-4 py-2.5 text-sm font-extrabold text-white"
+                >
+                  <span className="relative">
+                    <Package className="size-4" />
+                    <HelpCircle className="absolute -bottom-1 -end-1 size-2.5 text-gold" />
+                  </span>
+                  {t("mystery_box")}
+                </Link>
+                <div className="grid grid-cols-3 gap-x-4 gap-y-1">
+                  {specialGroup.items.slice(0, 30).map((c) => (
+                    <Link
+                      key={c.slug}
+                      to="/category/$slug"
+                      params={{ slug: c.slug }}
+                      className="flex items-center gap-1.5 truncate py-0.5 text-xs font-medium hover:text-primary hover:underline"
+                    >
+                      {c.logo_url ? <img src={c.logo_url} alt="" className="size-4 object-contain" /> : null}
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           {mainNav.map((g) => (
             <div key={g.name} className="group relative py-3">
               <Link
                 to="/categories"
                 hash={`g-${encodeURIComponent(g.name)}`}
-                className={
-                  KEY_GROUPS.includes(g.name)
-                    ? "nav-key -my-1.5 flex items-center gap-1"
-                    : "flex items-center gap-1 hover:text-primary/70"
-                }
+                className="flex items-center gap-1 hover:text-primary/70"
               >
-                {KEY_GROUPS.includes(g.name) ? <Star className="size-3.5" /> : null}
                 {g.name} <ChevronDown className="size-3.5" />
               </Link>
               <div className="absolute start-0 top-full z-40 hidden w-[34rem] border bg-popover p-4 shadow-elevated group-hover:block">
@@ -287,17 +333,6 @@ export function Header({
               </div>
             </div>
           ))}
-          <Link to="/shoes" className="nav-key my-1.5 flex items-center gap-1.5">
-            <Footprints className="size-3.5" />
-            {t("shoes")}
-          </Link>
-          <Link
-            to="/mystery-box"
-            className="mystery-glow my-1.5 flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 font-extrabold text-accent-foreground"
-          >
-            <Sparkles className="size-4" />
-            {t("mystery_box")}
-          </Link>
         </nav>
       </div>
     </header>
