@@ -35,6 +35,8 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const send = useServerFn(submitOrder);
   const [pending, setPending] = useState(false);
+  const [shipping, setShipping] = useState<"free" | "express">("free");
+  const shippingCost = shipping === "express" ? 50 : 0;
   const [form, setForm] = useState({
     customerName: "",
     phone: "",
@@ -43,6 +45,7 @@ function CheckoutPage() {
     address: "",
     notes: "",
   });
+
 
   const field = (key: keyof typeof form) => ({
     value: form[key],
