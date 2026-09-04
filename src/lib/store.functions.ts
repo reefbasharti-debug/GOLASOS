@@ -82,3 +82,8 @@ export const getShoes = createServerFn({ method: "GET" })
     const { loadShoes } = await import("./store.server");
     return loadShoes(data);
   });
+
+export const getMysteryBox = createServerFn({ method: "GET" }).handler(async () => {
+  const { loadMysteryBox } = await import("./store.server");
+  return loadMysteryBox();
+});
