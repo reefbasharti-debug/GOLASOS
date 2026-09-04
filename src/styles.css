@@ -262,3 +262,142 @@
   }
 }
 
+
+/* Compact variant of the critical style, for product cards */
+@utility btn-critical-sm {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 0.375rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  background: var(--accent);
+  color: var(--accent-foreground);
+  border: 1px solid color-mix(in oklab, var(--accent) 70%, black);
+  box-shadow: 0 4px 12px -8px rgb(244 208 63 / 0.9);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    filter 0.16s ease;
+
+  &:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px -10px rgb(244 208 63 / 1);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.97);
+    filter: brightness(0.95);
+    box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.22);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 3px var(--background),
+      0 0 0 6px color-mix(in oklab, var(--primary) 70%, transparent);
+  }
+}
+
+/* Outlined companion for secondary card action */
+@utility btn-critical-ghost {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 0.375rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 6%, transparent);
+  transition:
+    transform 0.16s ease,
+    background 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease;
+
+  &:hover {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.97);
+    box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.22);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 3px var(--background),
+      0 0 0 6px color-mix(in oklab, var(--accent) 80%, transparent);
+  }
+}
+
+/* Clear keyboard focus for supporting controls (quantity, thumbnails, cart rows) */
+@utility focus-key {
+  transition:
+    background 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px color-mix(in oklab, var(--primary) 70%, transparent);
+  }
+}
+
+/* Touch feel: bigger tap targets and no blue flash on mobile */
+.nav-key,
+.btn-critical,
+.btn-critical-sm,
+.btn-critical-ghost,
+.focus-key,
+.mystery-glow {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .nav-key,
+  .btn-critical,
+  .btn-critical-sm,
+  .btn-critical-ghost {
+    min-height: 2.75rem;
+    padding-inline: 1rem;
+    letter-spacing: 0.01em;
+  }
+
+  .focus-key {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+
+  .nav-key:hover,
+  .btn-critical:hover,
+  .btn-critical-sm:hover,
+  .btn-critical-ghost:hover {
+    transform: none;
+  }
+
+  .btn-critical:active,
+  .btn-critical-sm:active,
+  .btn-critical-ghost:active,
+  .nav-key:active,
+  .mystery-glow:active {
+    transform: scale(0.95);
+    filter: brightness(0.94);
+  }
+}
