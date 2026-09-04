@@ -70,7 +70,8 @@ function CheckoutPage() {
       const result = await send({
         data: {
           ...parsed.data,
-          items: items.map((i) => ({
+          shipping,
+
             productId: i.productId,
             size: i.custom ? `${i.size} | ${i.custom}` : i.size,
             quantity: i.quantity,
