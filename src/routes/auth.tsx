@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 
 const schema = z.object({
   email: z.string().trim().email("אימייל לא תקין").max(200),
