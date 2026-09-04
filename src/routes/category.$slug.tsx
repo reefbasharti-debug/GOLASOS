@@ -38,17 +38,18 @@ function CategoryPage() {
   const { category, products } = Route.useLoaderData();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-6">
       <nav className="text-xs text-muted-foreground">
-        <Link to="/">דף הבית</Link> / <Link to="/categories">קטגוריות</Link> / {category!.name}
+        <Link to="/">דף הבית</Link> / <Link to="/categories">קטגוריות</Link>
+        {category!.group_name ? <> / {category!.group_name}</> : null} / {category!.name}
       </nav>
-      <h1 className="mt-3 text-3xl font-bold">{category!.name}</h1>
+      <h1 className="mt-2 text-2xl font-bold">{category!.name}</h1>
       {category!.description ? (
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{category!.description}</p>
       ) : null}
       <p className="mt-1 text-sm text-muted-foreground">{products.length} מוצרים</p>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {products.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
