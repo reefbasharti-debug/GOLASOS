@@ -1,5 +1,5 @@
 import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router";
-import { imageUrl } from "@/lib/img";
+import { CategoryTile } from "@/components/CategoryTile";
 
 const rootApi = getRouteApi("__root__");
 
@@ -30,19 +30,7 @@ function ShoesPage() {
       </p>
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {shoes.map((c) => (
-          <Link
-            key={c.slug}
-            to="/category/$slug"
-            params={{ slug: c.slug }}
-            className="card-hover overflow-hidden rounded-lg border bg-card text-center"
-          >
-            <div className="aspect-square bg-muted">
-              {c.image_url ? (
-                <img src={imageUrl(c.image_url)} alt={c.name} loading="lazy" className="h-full w-full object-cover" />
-              ) : null}
-            </div>
-            <p className="line-clamp-2 p-2 text-sm font-semibold leading-5">{c.name}</p>
-          </Link>
+          <CategoryTile key={c.slug} slug={c.slug} name={c.name} image={c.image_url} size="md" />
         ))}
       </div>
     </div>

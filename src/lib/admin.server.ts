@@ -35,7 +35,7 @@ export async function loadAdminOverview(supabase: SupabaseClient<Database>) {
       .select("id, name, price_ils, product_type, is_active, is_featured, category_id, sizes, image_url")
       .order("sort_order")
       .limit(1000),
-    supabase.from("categories").select("id, slug, name, kind, sort_order, is_active").order("sort_order"),
+    supabase.from("categories").select("id, slug, name, kind, sort_order, is_active, logo_url").order("sort_order"),
     supabase.from("site_settings").select("key, value"),
   ]);
 

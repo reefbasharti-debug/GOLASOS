@@ -364,6 +364,14 @@ function CategoriesTab({ data, onChange }: { data: Overview; onChange: () => voi
             />
             פעילה
           </label>
+          <input
+            defaultValue={c.logo_url ?? ""}
+            placeholder="קישור ללוגו (אופציונלי)"
+            dir="ltr"
+            onBlur={(e) => e.target.value.trim() !== (c.logo_url ?? "") && patch(c.id, { logo_url: e.target.value.trim() || null })}
+            className="min-w-52 flex-1 rounded-md border px-2 py-1 text-xs"
+          />
+          {c.logo_url ? <img src={c.logo_url} alt="" className="h-7 w-7 object-contain" /> : null}
           <span className="text-xs text-muted-foreground">/{c.slug}</span>
         </div>
       ))}

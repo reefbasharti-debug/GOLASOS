@@ -32,12 +32,13 @@ export async function loadSettings(): Promise<Record<string, string>> {
 
 export async function loadStoreData() {
   const sb = publicClient();
-  const [categories, featured, settings] = await Promise.all([
+  const [categories, groups, featured, settings] = await Promise.all([
     sb
       .from("categories")
-      .select("id, slug, name, kind, image_url, description, group_name, group_order")
+      .select("id, slug, name, kind, image_url, logo_url, description, group_name, group_order")
       .eq("is_active", true)
       .order("sort_order"),
+    sb.from("category_groups").select("name, image_url").order("sort_order"),
     sb
       .from("products")
       .select(PRODUCT_FIELDS)
@@ -50,6 +51,7 @@ export async function loadStoreData() {
 
   return {
     categories: categories.data ?? [],
+    groups: groups.data ?? [],
     featured: featured.data ?? [],
     settings,
   };
@@ -59,7 +61,7 @@ export async function loadCategoryPage(slug: string) {
   const sb = publicClient();
   const { data: category } = await sb
     .from("categories")
-    .select("id, slug, name, kind, description, image_url, group_name, group_order")
+    .select("id, slug, name, kind, description, image_url, logo_url, group_name, group_order")
     .eq("slug", slug)
     .eq("is_active", true)
     .maybeSingle();
