@@ -16,6 +16,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as MysteryBoxRouteImport } from './routes/mystery-box'
 import { Route as OrderReceivedRouteImport } from './routes/order-received'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ShoesRouteImport } from './routes/shoes'
@@ -57,6 +58,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MysteryBoxRoute = MysteryBoxRouteImport.update({
+  id: '/mystery-box',
+  path: '/mystery-box',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrderReceivedRoute = OrderReceivedRouteImport.update({
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/mystery-box': typeof MysteryBoxRoute
   '/order-received': typeof OrderReceivedRoute
   '/search': typeof SearchRoute
   '/shoes': typeof ShoesRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/mystery-box': typeof MysteryBoxRoute
   '/order-received': typeof OrderReceivedRoute
   '/search': typeof SearchRoute
   '/shoes': typeof ShoesRoute
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/mystery-box': typeof MysteryBoxRoute
   '/order-received': typeof OrderReceivedRoute
   '/search': typeof SearchRoute
   '/shoes': typeof ShoesRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/mystery-box'
     | '/order-received'
     | '/search'
     | '/shoes'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/mystery-box'
     | '/order-received'
     | '/search'
     | '/shoes'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/mystery-box'
     | '/order-received'
     | '/search'
     | '/shoes'
@@ -210,6 +222,7 @@ export interface RootRouteChildren {
   CategoriesRoute: typeof CategoriesRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  MysteryBoxRoute: typeof MysteryBoxRoute
   OrderReceivedRoute: typeof OrderReceivedRoute
   SearchRoute: typeof SearchRoute
   ShoesRoute: typeof ShoesRoute
@@ -268,6 +281,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mystery-box': {
+      id: '/mystery-box'
+      path: '/mystery-box'
+      fullPath: '/mystery-box'
+      preLoaderRoute: typeof MysteryBoxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/order-received': {
@@ -348,6 +368,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategoriesRoute: CategoriesRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  MysteryBoxRoute: MysteryBoxRoute,
   OrderReceivedRoute: OrderReceivedRoute,
   SearchRoute: SearchRoute,
   ShoesRoute: ShoesRoute,

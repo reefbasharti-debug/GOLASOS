@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, Facebook, Instagram, Menu, Search, ShoppingCart, Twitter, User, Youtube, X, MessageCircle } from "lucide-react";
+import { ChevronDown, Sparkles, Facebook, Instagram, Menu, Search, ShoppingCart, Twitter, User, Youtube, X, MessageCircle } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
@@ -142,6 +142,14 @@ export function Header({
             <SheetContent side={lang === "he" ? "right" : "left"} className="w-80 overflow-y-auto">
               <SheetTitle>{t("all_categories")}</SheetTitle>
               <nav className="mt-4 space-y-1 pb-10">
+                <Link
+                  to="/mystery-box"
+                  onClick={() => setOpen(false)}
+                  className="mystery-glow mb-3 flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-2 font-extrabold text-accent-foreground"
+                >
+                  <Sparkles className="size-4" />
+                  {t("mystery_box")}
+                </Link>
                 {groups.map((g) => (
                   <details key={g.name} className="group">
                     <summary className="flex cursor-pointer list-none items-center gap-2 rounded px-2 py-1.5 text-sm font-bold hover:bg-secondary">
@@ -273,6 +281,13 @@ export function Header({
           ))}
           <Link to="/shoes" className="flex items-center gap-1 py-3 hover:text-primary/70">
             {t("shoes")} <ChevronDown className="size-3.5" />
+          </Link>
+          <Link
+            to="/mystery-box"
+            className="mystery-glow my-1.5 flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 font-extrabold text-accent-foreground"
+          >
+            <Sparkles className="size-4" />
+            {t("mystery_box")}
           </Link>
         </nav>
       </div>

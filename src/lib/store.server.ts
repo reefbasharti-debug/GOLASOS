@@ -333,3 +333,19 @@ export async function createOrder(input: OrderInput) {
 
   return { orderNumber: order.order_number, total };
 }
+
+/** Products backing the Mystery Box page (the box itself + the optional patch add-on). */
+export async function loadMysteryBox() {
+  const sb = publicClient();
+  const { data } = await sb
+    .from("products")
+    .select("id, name, description, price_ils, sizes, image_url, extra_images, source_id")
+    .in("source_id", ["mystery-box", "mystery-box-patch"])
+    .eq("is_active", true);
+
+  const rows = data ?? [];
+  return {
+    box: rows.find((r) => r.source_id === "mystery-box") ?? null,
+    patch: rows.find((r) => r.source_id === "mystery-box-patch") ?? null,
+  };
+}

@@ -106,6 +106,7 @@ const DICT = {
   admin: ["ניהול האתר", "Site admin"],
   rights: ["כל הזכויות שמורות.", "All rights reserved."],
   leagues: ["ליגות", "Leagues"],
+  mystery_box: ["מיסטרי בוקס", "Mystery Box"],
   lang_switch: ["English", "עברית"],
 } as const;
 
