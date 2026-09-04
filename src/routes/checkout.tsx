@@ -204,7 +204,18 @@ function CheckoutPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-4 border-t pt-3 text-lg font-bold">סה"כ: {total} ₪</p>
+          <div className="mt-4 space-y-1 border-t pt-3 text-sm">
+            <p className="flex justify-between">
+              <span>מוצרים</span>
+              <span>{total} ₪</span>
+            </p>
+            <p className="flex justify-between">
+              <span>{shipping === "express" ? "משלוח מהיר (עד 10 ימי עסקים)" : "משלוח חינם (עד 20 ימי עסקים)"}</span>
+              <span>{shippingCost ? `${shippingCost} ₪` : "חינם"}</span>
+            </p>
+          </div>
+          <p className="mt-2 text-lg font-bold">סה"כ: {total + shippingCost} ₪</p>
+
         </aside>
       </div>
     </div>
