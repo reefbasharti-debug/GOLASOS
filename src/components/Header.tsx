@@ -274,6 +274,13 @@ export function Header({
           <Link to="/shoes" className="flex items-center gap-1 py-3 hover:text-primary/70">
             {t("shoes")} <ChevronDown className="size-3.5" />
           </Link>
+          <Link
+            to="/mystery-box"
+            className="mystery-glow my-1.5 flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 font-extrabold text-accent-foreground"
+          >
+            <Sparkles className="size-4" />
+            {t("mystery_box")}
+          </Link>
         </nav>
       </div>
     </header>
