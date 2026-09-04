@@ -32,6 +32,64 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const updatePaymentStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ id: uuid, payment_status: z.enum(["unpaid", "paid", "refunded"]) }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("orders")
+      .update({
+        payment_status: data.payment_status,
+        paid_at: data.payment_status === "paid" ? new Date().toISOString() : null,
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+const customerSchema = z.object({
+  id: uuid.optional(),
+  full_name: z.string().trim().min(2).max(120),
+  phone: z.string().trim().min(6).max(30).transform((v) => v.replace(/[^0-9+]/g, "")),
+  email: z.string().trim().email().max(200).or(z.literal("")).transform((v) => v || null),
+  city: z.string().trim().max(120).transform((v) => v || null),
+  address: z.string().trim().max(300).transform((v) => v || null),
+  postal_code: z.string().trim().max(20).transform((v) => v || null),
+  notes: z.string().trim().max(2000).transform((v) => v || null),
+});
+
+export const saveCustomer = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => customerSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    const { id, ...fields } = data;
+    if (id) {
+      const { error } = await context.supabase.from("customers").update(fields).eq("id", id);
+      if (error) throw new Error(error.message);
+      return { ok: true, id };
+    }
+    const { data: row, error } = await context.supabase
+      .from("customers")
+      .insert({ ...fields, source: "admin" })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.code === "23505" ? "לקוח עם מספר טלפון זה כבר קיים" : error.message);
+    return { ok: true, id: row.id };
+  });
+
+export const deleteCustomer = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ id: uuid }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase.from("customers").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+
+
 export const saveSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
