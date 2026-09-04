@@ -151,3 +151,16 @@
     box-shadow: var(--shadow-elevated);
   }
 }
+
+@keyframes mystery-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 hsl(var(--accent) / 0.55), 0 0 12px 2px hsl(var(--accent) / 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px hsl(var(--accent) / 0), 0 0 22px 6px hsl(var(--accent) / 0.85);
+  }
+}
+
+.mystery-glow {
+  animation: mystery-pulse 1.8s ease-in-out infinite;
+}
