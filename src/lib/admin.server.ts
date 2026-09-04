@@ -23,10 +23,10 @@ export async function claimAdminRole(userId: string, email: string) {
 }
 
 export async function loadAdminOverview(supabase: SupabaseClient<Database>) {
-  const [orders, items, products, categories, settings] = await Promise.all([
+  const [orders, items, products, categories, settings, customers] = await Promise.all([
     supabase
       .from("orders")
-      .select("id, order_number, customer_name, phone, email, city, address, notes, total_ils, status, created_at")
+      .select("id, order_number, customer_name, phone, email, city, address, notes, total_ils, status, payment_status, paid_at, customer_id, created_at")
       .order("created_at", { ascending: false })
       .limit(200),
     supabase.from("order_items").select("order_id, product_name, size, quantity, unit_price_ils"),
@@ -37,12 +37,18 @@ export async function loadAdminOverview(supabase: SupabaseClient<Database>) {
       .limit(1000),
     supabase.from("categories").select("id, slug, name, kind, sort_order, is_active, logo_url").order("sort_order"),
     supabase.from("site_settings").select("key, value"),
+    supabase
+      .from("customers")
+      .select("id, full_name, phone, email, city, address, postal_code, notes, source, created_at")
+      .order("created_at", { ascending: false })
+      .limit(500),
   ]);
 
   const settingsMap: Record<string, string> = {};
   for (const row of settings.data ?? []) settingsMap[row.key] = row.value ?? "";
 
   return {
+    customers: customers.data ?? [],
     orders: orders.data ?? [],
     orderItems: items.data ?? [],
     products: products.data ?? [],
