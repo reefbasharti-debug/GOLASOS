@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, Sparkles, Home, Footprints, Star, Facebook, Instagram, Menu, Search, ShoppingCart, Twitter, User, Youtube, X, MessageCircle } from "lucide-react";
+import { ChevronDown, Home, Footprints, Star, Package, HelpCircle, Facebook, Instagram, Menu, Search, ShoppingCart, Twitter, User, Youtube, X, MessageCircle } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
