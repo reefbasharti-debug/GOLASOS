@@ -39,7 +39,7 @@ export function Logo({ className = "" }: { className?: string }) {
       <span className="flex items-center gap-0 text-navy font-display text-3xl font-extrabold tracking-tight">
         <span>גולא</span>
         <SoccerBall className="size-[0.68em] text-navy" aria-hidden="true" />
-        <span>סוס</span>
+        <span>וס</span>
       </span>
     </Link>
   );
