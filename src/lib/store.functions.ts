@@ -66,3 +66,19 @@ export const lookupOrder = createServerFn({ method: "POST" })
     const { trackOrder } = await import("./store.server");
     return trackOrder(data.orderNumber, data.phone);
   });
+
+export const getShoes = createServerFn({ method: "GET" })
+  .inputValidator((data) =>
+    z
+      .object({
+        model: z.string().max(60).optional(),
+        color: z.string().max(20).optional(),
+        size: z.string().max(10).optional(),
+        tier: z.string().max(10).optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { loadShoes } = await import("./store.server");
+    return loadShoes(data);
+  });

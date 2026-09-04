@@ -182,9 +182,11 @@ export type Database = {
       products: {
         Row: {
           category_id: string | null
+          color: string | null
           created_at: string
           description: string | null
           extra_images: string[]
+          home_rank: number
           id: string
           image_url: string | null
           is_active: boolean
@@ -192,6 +194,7 @@ export type Database = {
           name: string
           price_ils: number
           product_type: string
+          shoe_tier: string | null
           sizes: string[]
           sort_order: number
           source_id: string | null
@@ -200,9 +203,11 @@ export type Database = {
         }
         Insert: {
           category_id?: string | null
+          color?: string | null
           created_at?: string
           description?: string | null
           extra_images?: string[]
+          home_rank?: number
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -210,6 +215,7 @@ export type Database = {
           name: string
           price_ils?: number
           product_type?: string
+          shoe_tier?: string | null
           sizes?: string[]
           sort_order?: number
           source_id?: string | null
@@ -218,9 +224,11 @@ export type Database = {
         }
         Update: {
           category_id?: string | null
+          color?: string | null
           created_at?: string
           description?: string | null
           extra_images?: string[]
+          home_rank?: number
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -228,6 +236,7 @@ export type Database = {
           name?: string
           price_ils?: number
           product_type?: string
+          shoe_tier?: string | null
           sizes?: string[]
           sort_order?: number
           source_id?: string | null

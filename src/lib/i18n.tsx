@@ -6,7 +6,7 @@ const STORAGE_KEY = "golassos-lang";
 
 const DICT = {
   // header
-  announcement: ["🎉 חולצות כדורגל 65 ₪ • נעלי כדורגל 350 ₪ • משלוח לכל הארץ 🎉", "🎉 Football jerseys 65 ₪ • Football boots 350 ₪ • Shipping all over Israel 🎉"],
+  announcement: ["🎉 חולצות כדורגל 65 ₪ • נעלי כדורגל מ-300 ₪ • משלוח לכל הארץ 🎉", "🎉 Football jerseys 65 ₪ • Football boots from 300 ₪ • Shipping all over Israel 🎉"],
   tracking: ["מעקב הזמנה", "Tracking"],
   search_placeholder: ["חיפוש...", "Search..."],
   sign_in: ["התחברות / הרשמה", "Sign In/Register"],

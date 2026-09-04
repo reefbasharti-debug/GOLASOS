@@ -32,7 +32,7 @@ export async function loadAdminOverview(supabase: SupabaseClient<Database>) {
     supabase.from("order_items").select("order_id, product_name, size, quantity, unit_price_ils"),
     supabase
       .from("products")
-      .select("id, name, price_ils, product_type, is_active, is_featured, category_id, sizes, image_url")
+      .select("id, name, price_ils, product_type, is_active, is_featured, category_id, sizes, image_url, shoe_tier, color, home_rank")
       .order("sort_order")
       .limit(1000),
     supabase.from("categories").select("id, slug, name, kind, sort_order, is_active, logo_url").order("sort_order"),
