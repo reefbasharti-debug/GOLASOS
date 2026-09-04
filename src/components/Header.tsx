@@ -46,8 +46,7 @@ export function Logo({ className = "" }: { className?: string }) {
 }
 
 const MAIN_NAV_LIMIT = 7;
-/** Category groups that get the highlighted "key button" styling in the main nav. */
-const KEY_GROUPS: string[] = ["קולקציות מיוחדות"];
+const SPECIAL_GROUP_NAME = "קולקציות מיוחדות";
 
 export function Header({
   categories,
