@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
-import { sendEmailOrder, sendTelegramOrder, type OrderNotification } from "./notify.server";
+import { broadcastOrder, type OrderNotification } from "./notify.server";
 
 function publicClient() {
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
@@ -323,6 +323,7 @@ export async function createOrder(input: OrderInput) {
 
   const settings = await loadSettings();
   const notification: OrderNotification = {
+    kind: "new",
     orderNumber: order.order_number,
     customerName: input.customerName,
     phone: input.phone,
@@ -339,10 +340,7 @@ export async function createOrder(input: OrderInput) {
     })),
   };
 
-  await Promise.allSettled([
-    sendTelegramOrder(settings["telegram_chat_id"] ?? "", notification),
-    sendEmailOrder(settings["notify_email"] ?? "", notification),
-  ]);
+  await broadcastOrder(settings, notification);
 
   return { orderNumber: order.order_number, total };
 }
