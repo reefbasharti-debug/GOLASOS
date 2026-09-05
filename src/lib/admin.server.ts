@@ -22,6 +22,12 @@ export async function claimAdminRole(userId: string, email: string) {
   return { granted: true };
 }
 
+/** Throws unless the signed-in user holds the admin role (checked via RLS-safe RPC). */
+export async function assertAdmin(supabase: SupabaseClient<Database>, userId: string): Promise<void> {
+  const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+  if (error || !data) throw new Error("Forbidden: admin role required");
+}
+
 export async function loadAdminOverview(supabase: SupabaseClient<Database>) {
   const [orders, items, products, categories, settings, customers] = await Promise.all([
     supabase
