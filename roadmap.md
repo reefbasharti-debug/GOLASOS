@@ -1,4 +1,12 @@
-# Roadmap
-- [ ] Expand catalog: thousands of jerseys + many shoes from Yupoo suppliers (re-scrape all albums, translate, seed)
-- [ ] Remove blue hero section on homepage
-- [ ] Logo: replace final ס with soccer ball icon, remove G badge
+# Roadmap — site restructure (Sep 2026)
+- [ ] DB: products audience/sport/item_type; orders user_id/tracking/referral/credit; profiles, referrals, support_tickets, testimonials
+- [ ] Header: nav גברים / ילדים / נשים / מיסטרי בוקס (glow) / נעליים / NBA; filter search; cart + account top-left; black marquee bar (אחים לחיים + חבר מביא חבר)
+- [ ] Browse page with filters (league, item type, team, color, price, audience, sport)
+- [ ] Product page: size, fan/player (+15), name & number (+10) — priced in cart + server
+- [ ] Home: top-10 team logos, auto-scrolling bestsellers, testimonials (chat style), advantages strip
+- [ ] Desktop-only random purchase toasts (bottom-left)
+- [ ] Floating scripted support chatbot (right side) with email/telegram handoff + ticket storage
+- [ ] Customer accounts: /account (orders, status, tracking, profile/email/password, payment pref, delete account)
+- [ ] Affiliate page + referral links (15 ₪ credit per new buyer), credit usable at checkout
+- [ ] Google Sheets: append orders; pull tracking numbers back into site
+- [ ] Admin: tickets + testimonials + tracking column
