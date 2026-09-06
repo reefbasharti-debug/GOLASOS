@@ -133,6 +133,7 @@ export type Database = {
       }
       order_items: {
         Row: {
+          custom_text: string | null
           id: string
           order_id: string
           product_id: string | null
@@ -140,8 +141,10 @@ export type Database = {
           quantity: number
           size: string | null
           unit_price_ils: number
+          version: string | null
         }
         Insert: {
+          custom_text?: string | null
           id?: string
           order_id: string
           product_id?: string | null
@@ -149,8 +152,10 @@ export type Database = {
           quantity?: number
           size?: string | null
           unit_price_ils?: number
+          version?: string | null
         }
         Update: {
+          custom_text?: string | null
           id?: string
           order_id?: string
           product_id?: string | null
@@ -158,6 +163,7 @@ export type Database = {
           quantity?: number
           size?: string | null
           unit_price_ils?: number
+          version?: string | null
         }
         Relationships: [
           {
@@ -181,6 +187,7 @@ export type Database = {
           address: string | null
           city: string | null
           created_at: string
+          credit_used_ils: number
           customer_id: string | null
           customer_name: string
           email: string | null
@@ -190,14 +197,21 @@ export type Database = {
           paid_at: string | null
           payment_status: string
           phone: string
+          referral_code: string | null
+          sheet_synced_at: string | null
+          shipped_at: string | null
+          shipping_method: string
           status: string
           total_ils: number
+          tracking_number: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           address?: string | null
           city?: string | null
           created_at?: string
+          credit_used_ils?: number
           customer_id?: string | null
           customer_name: string
           email?: string | null
@@ -207,14 +221,21 @@ export type Database = {
           paid_at?: string | null
           payment_status?: string
           phone: string
+          referral_code?: string | null
+          sheet_synced_at?: string | null
+          shipped_at?: string | null
+          shipping_method?: string
           status?: string
           total_ils?: number
+          tracking_number?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           address?: string | null
           city?: string | null
           created_at?: string
+          credit_used_ils?: number
           customer_id?: string | null
           customer_name?: string
           email?: string | null
@@ -224,9 +245,15 @@ export type Database = {
           paid_at?: string | null
           payment_status?: string
           phone?: string
+          referral_code?: string | null
+          sheet_synced_at?: string | null
+          shipped_at?: string | null
+          shipping_method?: string
           status?: string
           total_ils?: number
+          tracking_number?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -240,6 +267,7 @@ export type Database = {
       }
       products: {
         Row: {
+          audience: string
           category_id: string | null
           color: string | null
           created_at: string
@@ -250,6 +278,7 @@ export type Database = {
           image_url: string | null
           is_active: boolean
           is_featured: boolean
+          item_type: string
           name: string
           price_ils: number
           product_type: string
@@ -257,10 +286,12 @@ export type Database = {
           sizes: string[]
           sort_order: number
           source_id: string | null
+          sport: string
           supplier_model: string | null
           updated_at: string
         }
         Insert: {
+          audience?: string
           category_id?: string | null
           color?: string | null
           created_at?: string
@@ -271,6 +302,7 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           is_featured?: boolean
+          item_type?: string
           name: string
           price_ils?: number
           product_type?: string
@@ -278,10 +310,12 @@ export type Database = {
           sizes?: string[]
           sort_order?: number
           source_id?: string | null
+          sport?: string
           supplier_model?: string | null
           updated_at?: string
         }
         Update: {
+          audience?: string
           category_id?: string | null
           color?: string | null
           created_at?: string
@@ -292,6 +326,7 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           is_featured?: boolean
+          item_type?: string
           name?: string
           price_ils?: number
           product_type?: string
@@ -299,6 +334,7 @@ export type Database = {
           sizes?: string[]
           sort_order?: number
           source_id?: string | null
+          sport?: string
           supplier_model?: string | null
           updated_at?: string
         }
@@ -308,6 +344,80 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          credit_ils: number
+          email: string | null
+          full_name: string | null
+          id: string
+          payment_pref: string
+          phone: string | null
+          referral_code: string
+          referred_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          credit_ils?: number
+          email?: string | null
+          full_name?: string | null
+          id: string
+          payment_pref?: string
+          phone?: string | null
+          referral_code: string
+          referred_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          credit_ils?: number
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          payment_pref?: string
+          phone?: string | null
+          referral_code?: string
+          referred_by?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          amount_ils: number
+          buyer_label: string | null
+          created_at: string
+          id: string
+          order_id: string | null
+          referrer_id: string
+        }
+        Insert: {
+          amount_ils?: number
+          buyer_label?: string | null
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          referrer_id: string
+        }
+        Update: {
+          amount_ils?: number
+          buyer_label?: string | null
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          referrer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]
@@ -327,6 +437,75 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: string | null
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          created_at: string
+          description: string | null
+          email: string | null
+          id: string
+          image_url: string | null
+          kind: string
+          order_number: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          image_url?: string | null
+          kind: string
+          order_number?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          image_url?: string | null
+          kind?: string
+          order_number?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          created_at: string
+          customer_name: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          message: string
+          reply: string | null
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          message: string
+          reply?: string | null
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          message?: string
+          reply?: string | null
+          sort_order?: number
         }
         Relationships: []
       }
