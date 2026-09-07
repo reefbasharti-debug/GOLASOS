@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { broadcastOrder, type OrderNotification } from "./notify.server";
+import { appendOrderToSheet } from "./sheets.server";
 
 function publicClient() {
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
@@ -20,7 +21,7 @@ function publicClient() {
 }
 
 const PRODUCT_FIELDS =
-  "id, name, image_url, price_ils, product_type, sizes, category_id, supplier_model, description, extra_images, is_featured, sort_order, shoe_tier, color, home_rank";
+  "id, name, image_url, price_ils, product_type, sizes, category_id, supplier_model, description, extra_images, is_featured, sort_order, shoe_tier, color, home_rank, audience, sport, item_type";
 
 export async function loadSettings(): Promise<Record<string, string>> {
   const sb = publicClient();
@@ -163,7 +164,16 @@ export async function loadHomeData() {
       .limit(15),
   ]);
 
+  const [topTeams, bestsellers, testimonials] = await Promise.all([
+    loadTopTeams(),
+    loadBestsellers(),
+    loadTestimonials(),
+  ]);
+
   return {
+    topTeams,
+    bestsellers,
+    testimonials,
     newest: newest.data ?? [],
     national: stripJoin(national.data),
     club: stripJoin(club.data),
@@ -256,8 +266,21 @@ type OrderInput = {
   address?: string | undefined;
   notes?: string | undefined;
   shipping?: "free" | "express" | undefined;
-  items: { productId: string; size?: string | undefined; quantity: number }[];
+  userId?: string | undefined;
+  referralCode?: string | undefined;
+  creditUsed?: number | undefined;
+  items: {
+    productId: string;
+    size?: string | undefined;
+    quantity: number;
+    version?: "fan" | "player" | undefined;
+    custom?: string | undefined;
+  }[];
 };
+
+/** Surcharges applied on top of the catalog price. */
+export const PLAYER_VERSION_ILS = 15;
+export const CUSTOM_PRINT_ILS = 10;
 
 export const EXPRESS_SHIPPING_ILS = 50;
 
@@ -280,12 +303,18 @@ export async function createOrder(input: OrderInput) {
     .filter((i) => byId.has(i.productId))
     .map((i) => {
       const p = byId.get(i.productId)!;
+      const player = i.version === "player";
+      const custom = (i.custom ?? "").trim().slice(0, 40);
+      const unit =
+        Number(p.price_ils) + (player ? PLAYER_VERSION_ILS : 0) + (custom ? CUSTOM_PRINT_ILS : 0);
       return {
         product_id: p.id,
         product_name: p.name,
         size: i.size || null,
         quantity: i.quantity,
-        unit_price_ils: Number(p.price_ils),
+        unit_price_ils: unit,
+        version: player ? "player" : "fan",
+        custom_text: custom || null,
       };
     });
 
@@ -296,7 +325,9 @@ export async function createOrder(input: OrderInput) {
   const shippingLabel = express
     ? `משלוח מהיר (עד 10 ימי עסקים) — ${EXPRESS_SHIPPING_ILS} ₪`
     : "משלוח חינם (עד 20 ימי עסקים)";
-  const total = items.reduce((sum, i) => sum + i.unit_price_ils * i.quantity, 0) + shippingCost;
+  const subtotal = items.reduce((sum, i) => sum + i.unit_price_ils * i.quantity, 0) + shippingCost;
+  const credit = Math.max(0, Math.min(Number(input.creditUsed ?? 0), subtotal));
+  const total = Math.max(0, subtotal - credit);
   const notes = [input.notes, shippingLabel].filter(Boolean).join(" | ");
 
   const { data: order, error: orderError } = await supabaseAdmin
@@ -309,6 +340,10 @@ export async function createOrder(input: OrderInput) {
       address: input.address || null,
       notes: notes || null,
       total_ils: total,
+      user_id: input.userId ?? null,
+      referral_code: input.referralCode?.trim().slice(0, 20) || null,
+      credit_used_ils: credit,
+      shipping_method: express ? "express" : "free",
     })
 
     .select("id, order_number")
@@ -321,7 +356,28 @@ export async function createOrder(input: OrderInput) {
     .insert(items.map((i) => ({ ...i, order_id: order.id })));
   if (itemsError) throw new Error(itemsError.message);
 
+  if (credit > 0 && input.userId) {
+    const { data: prof } = await supabaseAdmin
+      .from("profiles")
+      .select("credit_ils")
+      .eq("id", input.userId)
+      .maybeSingle();
+    const left = Math.max(0, Number(prof?.credit_ils ?? 0) - credit);
+    await supabaseAdmin.from("profiles").update({ credit_ils: left }).eq("id", input.userId);
+  }
+
+  await creditReferrer(order.id, input.referralCode, input.customerName);
+
   const settings = await loadSettings();
+
+  void appendOrderToSheet({
+    createdAt: new Date().toISOString(),
+    orderNumber: order.order_number,
+    email: input.email ?? "",
+    total,
+    itemCount: items.reduce((n, i) => n + i.quantity, 0),
+  }).catch((e) => console.error("[sheets] append failed", e));
+
   const notification: OrderNotification = {
     kind: "new",
     orderNumber: order.order_number,
@@ -359,4 +415,152 @@ export async function loadMysteryBox() {
     box: rows.find((r) => r.source_id === "mystery-box") ?? null,
     patch: rows.find((r) => r.source_id === "mystery-box-patch") ?? null,
   };
+}
+
+/** The ten most popular teams, shown as crest tiles on the home page. */
+export const TOP_TEAM_SLUGS = [
+  "argentina",
+  "brazil",
+  "bar-barcelona",
+  "r-mad-real-madrid",
+  "asn",
+  "psg",
+  "spain",
+  "lll-linda",
+  "mnu",
+  "mci",
+];
+
+export async function loadTopTeams() {
+  const sb = publicClient();
+  const { data } = await sb
+    .from("categories")
+    .select("slug, name, logo_url, image_url")
+    .in("slug", TOP_TEAM_SLUGS)
+    .eq("is_active", true);
+  const bySlug = new Map((data ?? []).map((c) => [c.slug, c]));
+  return TOP_TEAM_SLUGS.map((s) => bySlug.get(s)).filter(Boolean) as NonNullable<
+    ReturnType<typeof bySlug.get>
+  >[];
+}
+
+export async function loadBestsellers() {
+  const sb = publicClient();
+  const { data } = await sb
+    .from("products")
+    .select(PRODUCT_FIELDS)
+    .eq("is_active", true)
+    .neq("product_type", "shoes")
+    .order("home_rank", { ascending: false })
+    .limit(24);
+  return data ?? [];
+}
+
+export async function loadTestimonials() {
+  const sb = publicClient();
+  const { data } = await sb
+    .from("testimonials")
+    .select("id, customer_name, message, reply, image_url")
+    .eq("is_active", true)
+    .order("sort_order")
+    .limit(12);
+  return data ?? [];
+}
+
+export type BrowseFilters = {
+  audience?: string | undefined;
+  sport?: string | undefined;
+  item?: string | undefined;
+  league?: string | undefined;
+  team?: string | undefined;
+  color?: string | undefined;
+  size?: string | undefined;
+  min?: number | undefined;
+  max?: number | undefined;
+  q?: string | undefined;
+  sort?: string | undefined;
+};
+
+/** Faceted catalog browse used by the main nav entries and the filter bar. */
+export async function loadBrowse(f: BrowseFilters) {
+  const sb = publicClient();
+  let q = sb
+    .from("products")
+    .select(`${PRODUCT_FIELDS}, created_at, categories!inner(slug, name, group_name, logo_url)` as const)
+    .eq("is_active", true);
+
+  if (f.audience) q = q.eq("audience", f.audience);
+  if (f.sport) q = q.eq("sport", f.sport);
+  if (f.item) q = q.eq("item_type", f.item);
+  if (f.color) q = q.eq("color", f.color);
+  if (f.team) q = q.eq("categories.slug", f.team);
+  if (f.league) q = q.eq("categories.group_name", f.league);
+  if (f.size) q = q.contains("sizes", [f.size]);
+  if (typeof f.min === "number") q = q.gte("price_ils", f.min);
+  if (typeof f.max === "number") q = q.lte("price_ils", f.max);
+  if (f.q) {
+    const term = f.q.replace(/[%_,]/g, " ").trim();
+    if (term) q = q.or(`name.ilike.%${term}%,supplier_model.ilike.%${term}%`);
+  }
+
+  if (f.sort === "price_asc") q = q.order("price_ils", { ascending: true });
+  else if (f.sort === "price_desc") q = q.order("price_ils", { ascending: false });
+  else if (f.sort === "newest") q = q.order("created_at", { ascending: false });
+  else q = q.order("home_rank", { ascending: false });
+
+  const [{ data }, { data: cats }] = await Promise.all([
+    q.limit(120),
+    sb
+      .from("categories")
+      .select("slug, name, group_name, kind, logo_url")
+      .eq("is_active", true)
+      .order("group_name")
+      .order("name"),
+  ]);
+
+  return { products: stripJoin(data), categories: cats ?? [] };
+}
+
+/** Grants the referrer their bonus once an order carries their code. */
+async function creditReferrer(orderId: string, code: string | undefined, buyerName: string) {
+  const ref = (code ?? "").trim().toUpperCase();
+  if (!ref) return;
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: referrer } = await supabaseAdmin
+    .from("profiles")
+    .select("id, credit_ils")
+    .eq("referral_code", ref)
+    .maybeSingle();
+  if (!referrer) return;
+  const settings = await loadSettings();
+  const bonus = Number(settings["affiliate_bonus_ils"] || 15);
+  await supabaseAdmin.from("referrals").insert({
+    referrer_id: referrer.id,
+    order_id: orderId,
+    buyer_label: maskName(buyerName),
+    amount_ils: bonus,
+  });
+  await supabaseAdmin
+    .from("profiles")
+    .update({ credit_ils: Number(referrer.credit_ils) + bonus })
+    .eq("id", referrer.id);
+}
+
+/** "רועי מזרחי" -> "רו**" — used for referral logs and the live purchase popups. */
+export function maskName(name: string): string {
+  const clean = name.trim();
+  if (clean.length <= 2) return `${clean}**`;
+  return `${clean.slice(0, 2)}**`;
+}
+
+/** Random recent-looking purchases for the live social-proof popups (desktop). */
+export async function loadPurchaseTicker() {
+  const sb = publicClient();
+  const { data } = await sb
+    .from("products")
+    .select("name, price_ils, image_url")
+    .eq("is_active", true)
+    .order("home_rank", { ascending: false })
+    .limit(60);
+  return data ?? [];
 }

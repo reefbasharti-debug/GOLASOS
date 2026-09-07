@@ -25,6 +25,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as ApiPublicImgRouteImport } from './routes/api/public/img'
+import { Route as ApiPublicSheetSyncRouteImport } from './routes/api/public/sheet-sync'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -105,6 +106,11 @@ const ApiPublicImgRoute = ApiPublicImgRouteImport.update({
   path: '/api/public/img',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicSheetSyncRoute = ApiPublicSheetSyncRouteImport.update({
+  id: '/api/public/sheet-sync',
+  path: '/api/public/sheet-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
   '/api/public/img': typeof ApiPublicImgRoute
+  '/api/public/sheet-sync': typeof ApiPublicSheetSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
   '/api/public/img': typeof ApiPublicImgRoute
+  '/api/public/sheet-sync': typeof ApiPublicSheetSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
   '/api/public/img': typeof ApiPublicImgRoute
+  '/api/public/sheet-sync': typeof ApiPublicSheetSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/category/$slug'
     | '/product/$id'
     | '/api/public/img'
+    | '/api/public/sheet-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/category/$slug'
     | '/product/$id'
     | '/api/public/img'
+    | '/api/public/sheet-sync'
   id:
     | '__root__'
     | '/'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/category/$slug'
     | '/product/$id'
     | '/api/public/img'
+    | '/api/public/sheet-sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -230,6 +242,7 @@ export interface RootRouteChildren {
   CategorySlugRoute: typeof CategorySlugRoute
   ProductIdRoute: typeof ProductIdRoute
   ApiPublicImgRoute: typeof ApiPublicImgRoute
+  ApiPublicSheetSyncRoute: typeof ApiPublicSheetSyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -346,6 +359,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicImgRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/sheet-sync': {
+      id: '/api/public/sheet-sync'
+      path: '/api/public/sheet-sync'
+      fullPath: '/api/public/sheet-sync'
+      preLoaderRoute: typeof ApiPublicSheetSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -376,6 +396,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategorySlugRoute: CategorySlugRoute,
   ProductIdRoute: ProductIdRoute,
   ApiPublicImgRoute: ApiPublicImgRoute,
+  ApiPublicSheetSyncRoute: ApiPublicSheetSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
