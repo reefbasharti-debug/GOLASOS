@@ -164,7 +164,16 @@ export async function loadHomeData() {
       .limit(15),
   ]);
 
+  const [topTeams, bestsellers, testimonials] = await Promise.all([
+    loadTopTeams(),
+    loadBestsellers(),
+    loadTestimonials(),
+  ]);
+
   return {
+    topTeams,
+    bestsellers,
+    testimonials,
     newest: newest.data ?? [],
     national: stripJoin(national.data),
     club: stripJoin(club.data),
