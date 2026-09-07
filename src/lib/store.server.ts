@@ -407,3 +407,151 @@ export async function loadMysteryBox() {
     patch: rows.find((r) => r.source_id === "mystery-box-patch") ?? null,
   };
 }
+
+/** The ten most popular teams, shown as crest tiles on the home page. */
+export const TOP_TEAM_SLUGS = [
+  "argentina",
+  "brazil",
+  "bar-barcelona",
+  "r-mad-real-madrid",
+  "asn",
+  "psg",
+  "spain",
+  "lll-linda",
+  "mnu",
+  "mci",
+];
+
+export async function loadTopTeams() {
+  const sb = publicClient();
+  const { data } = await sb
+    .from("categories")
+    .select("slug, name, logo_url, image_url")
+    .in("slug", TOP_TEAM_SLUGS)
+    .eq("is_active", true);
+  const bySlug = new Map((data ?? []).map((c) => [c.slug, c]));
+  return TOP_TEAM_SLUGS.map((s) => bySlug.get(s)).filter(Boolean) as NonNullable<
+    ReturnType<typeof bySlug.get>
+  >[];
+}
+
+export async function loadBestsellers() {
+  const sb = publicClient();
+  const { data } = await sb
+    .from("products")
+    .select(PRODUCT_FIELDS)
+    .eq("is_active", true)
+    .neq("product_type", "shoes")
+    .order("home_rank", { ascending: false })
+    .limit(24);
+  return data ?? [];
+}
+
+export async function loadTestimonials() {
+  const sb = publicClient();
+  const { data } = await sb
+    .from("testimonials")
+    .select("id, customer_name, message, reply, image_url")
+    .eq("is_active", true)
+    .order("sort_order")
+    .limit(12);
+  return data ?? [];
+}
+
+export type BrowseFilters = {
+  audience?: string | undefined;
+  sport?: string | undefined;
+  item?: string | undefined;
+  league?: string | undefined;
+  team?: string | undefined;
+  color?: string | undefined;
+  size?: string | undefined;
+  min?: number | undefined;
+  max?: number | undefined;
+  q?: string | undefined;
+  sort?: string | undefined;
+};
+
+/** Faceted catalog browse used by the main nav entries and the filter bar. */
+export async function loadBrowse(f: BrowseFilters) {
+  const sb = publicClient();
+  let q = sb
+    .from("products")
+    .select(`${PRODUCT_FIELDS}, created_at, categories!inner(slug, name, group_name, logo_url)` as const)
+    .eq("is_active", true);
+
+  if (f.audience) q = q.eq("audience", f.audience);
+  if (f.sport) q = q.eq("sport", f.sport);
+  if (f.item) q = q.eq("item_type", f.item);
+  if (f.color) q = q.eq("color", f.color);
+  if (f.team) q = q.eq("categories.slug", f.team);
+  if (f.league) q = q.eq("categories.group_name", f.league);
+  if (f.size) q = q.contains("sizes", [f.size]);
+  if (typeof f.min === "number") q = q.gte("price_ils", f.min);
+  if (typeof f.max === "number") q = q.lte("price_ils", f.max);
+  if (f.q) {
+    const term = f.q.replace(/[%_,]/g, " ").trim();
+    if (term) q = q.or(`name.ilike.%${term}%,supplier_model.ilike.%${term}%`);
+  }
+
+  if (f.sort === "price_asc") q = q.order("price_ils", { ascending: true });
+  else if (f.sort === "price_desc") q = q.order("price_ils", { ascending: false });
+  else if (f.sort === "newest") q = q.order("created_at", { ascending: false });
+  else q = q.order("home_rank", { ascending: false });
+
+  const [{ data }, { data: cats }] = await Promise.all([
+    q.limit(120),
+    sb
+      .from("categories")
+      .select("slug, name, group_name, kind, logo_url")
+      .eq("is_active", true)
+      .order("group_name")
+      .order("name"),
+  ]);
+
+  return { products: stripJoin(data), categories: cats ?? [] };
+}
+
+/** Grants the referrer their bonus once an order carries their code. */
+async function creditReferrer(orderId: string, code: string | undefined, buyerName: string) {
+  const ref = (code ?? "").trim().toUpperCase();
+  if (!ref) return;
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: referrer } = await supabaseAdmin
+    .from("profiles")
+    .select("id, credit_ils")
+    .eq("referral_code", ref)
+    .maybeSingle();
+  if (!referrer) return;
+  const settings = await loadSettings();
+  const bonus = Number(settings["affiliate_bonus_ils"] || 15);
+  await supabaseAdmin.from("referrals").insert({
+    referrer_id: referrer.id,
+    order_id: orderId,
+    buyer_label: maskName(buyerName),
+    amount_ils: bonus,
+  });
+  await supabaseAdmin
+    .from("profiles")
+    .update({ credit_ils: Number(referrer.credit_ils) + bonus })
+    .eq("id", referrer.id);
+}
+
+/** "רועי מזרחי" -> "רו**" — used for referral logs and the live purchase popups. */
+export function maskName(name: string): string {
+  const clean = name.trim();
+  if (clean.length <= 2) return `${clean}**`;
+  return `${clean.slice(0, 2)}**`;
+}
+
+/** Random recent-looking purchases for the live social-proof popups (desktop). */
+export async function loadPurchaseTicker() {
+  const sb = publicClient();
+  const { data } = await sb
+    .from("products")
+    .select("name, price_ils, image_url")
+    .eq("is_active", true)
+    .order("home_rank", { ascending: false })
+    .limit(60);
+  return data ?? [];
+}
