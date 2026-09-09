@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { getProduct } from "@/lib/store.functions";
 import { imageUrl } from "@/lib/img";
-import { useCart } from "@/lib/cart";
+import { useCart, PLAYER_VERSION_ILS, CUSTOM_PRINT_ILS } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
 import { ProductCard } from "@/components/ProductCard";
 
@@ -50,10 +50,17 @@ function ProductPage() {
   const [img, setImg] = useState(0);
   const [size, setSize] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
+  const [version, setVersion] = useState<"fan" | "player">("fan");
   const [customOn, setCustomOn] = useState(false);
   const [customName, setCustomName] = useState("");
   const [customNumber, setCustomNumber] = useState("");
   const [detailOpen, setDetailOpen] = useState(true);
+
+  const isApparel = p.product_type !== "shoes";
+  const unitPrice = (custom: string) =>
+    Number(p.price_ils) +
+    (isApparel && version === "player" ? PLAYER_VERSION_ILS : 0) +
+    (custom ? CUSTOM_PRINT_ILS : 0);
 
   const addToCart = (goToCart: boolean) => {
     if (p.sizes.length > 0 && !size) {
@@ -65,9 +72,10 @@ function ProductPage() {
       productId: p.id,
       name: p.name,
       image: p.image_url,
-      price: Number(p.price_ils),
+      price: unitPrice(custom),
       size,
       quantity,
+      version,
       ...(custom ? { custom } : {}),
     });
     toast.success(t("added_to_cart"));
@@ -132,12 +140,38 @@ function ProductPage() {
         {/* Buy box */}
         <div>
           <h1 className="text-2xl font-light md:text-3xl">{p.name}</h1>
-          <p className="mt-3 text-2xl font-bold">₪ {Number(p.price_ils)}</p>
+          <p className="mt-3 text-2xl font-bold">
+            ₪ {unitPrice(customOn && (customName || customNumber) ? "x" : "")}
+          </p>
 
           <ul className="mt-5 space-y-2 border-y py-4 text-sm">
             <li className="flex items-center gap-2"><ShoppingCart className="size-4" /> {t("perk_1")}</li>
             <li className="flex items-center gap-2"><Truck className="size-4" /> {t("perk_2")}</li>
           </ul>
+
+          {isApparel ? (
+            <div className="mt-5">
+              <p className="mb-2 text-sm">גרסה</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setVersion("fan")}
+                  className={`border px-4 py-2 text-sm font-semibold transition-colors ${
+                    version === "fan" ? "border-foreground bg-foreground text-background" : "hover:border-foreground"
+                  }`}
+                >
+                  גרסת אוהד
+                </button>
+                <button
+                  onClick={() => setVersion("player")}
+                  className={`border px-4 py-2 text-sm font-semibold transition-colors ${
+                    version === "player" ? "border-foreground bg-foreground text-background" : "hover:border-foreground"
+                  }`}
+                >
+                  גרסת שחקן (+{PLAYER_VERSION_ILS} ₪)
+                </button>
+              </div>
+            </div>
+          ) : null}
 
           {p.sizes.length > 0 ? (
             <div className="mt-5">
@@ -164,7 +198,7 @@ function ProductPage() {
             <div className="mt-5 border p-3">
               <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold">
                 <input type="checkbox" checked={customOn} onChange={(e) => setCustomOn(e.target.checked)} />
-                {t("customize")}
+                {t("customize")} (+{CUSTOM_PRINT_ILS} ₪)
               </label>
               {customOn ? (
                 <div className="mt-3 grid grid-cols-[1fr_6rem] gap-2">

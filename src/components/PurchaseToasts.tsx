@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { imgUrl } from "@/lib/img";
+import { imageUrl } from "@/lib/img";
 
 export type TickerProduct = { name: string; price_ils: number; image_url: string | null };
 
@@ -65,7 +65,7 @@ export function PurchaseToasts({ products }: { products: TickerProduct[] }) {
         </div>
         {popup.product.image_url ? (
           <img
-            src={imgUrl(popup.product.image_url)}
+            src={imageUrl(popup.product.image_url)}
             alt=""
             loading="lazy"
             className="size-16 shrink-0 rounded-lg border object-cover"
