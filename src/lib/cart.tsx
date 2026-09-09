@@ -1,22 +1,32 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
+/** Surcharges — kept in sync with the server, which recalculates the real price. */
+export const PLAYER_VERSION_ILS = 15;
+export const CUSTOM_PRINT_ILS = 10;
+
 export type CartItem = {
   productId: string;
   name: string;
   image: string | null;
+  /** Final unit price shown to the customer, surcharges included. */
   price: number;
   size: string;
   quantity: number;
+  version?: "fan" | "player";
   custom?: string;
 };
+
+export function lineKey(i: Pick<CartItem, "productId" | "size" | "version" | "custom">): string {
+  return [i.productId, i.size, i.version ?? "fan", i.custom ?? ""].join("|");
+}
 
 type CartContextValue = {
   items: CartItem[];
   count: number;
   total: number;
   add: (item: CartItem) => void;
-  remove: (productId: string, size: string) => void;
-  setQuantity: (productId: string, size: string, quantity: number) => void;
+  remove: (key: string) => void;
+  setQuantity: (key: string, quantity: number) => void;
   clear: () => void;
 };
 
@@ -45,9 +55,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const add = useCallback((item: CartItem) => {
     setItems((prev) => {
-      const existing = prev.find(
-        (i) => i.productId === item.productId && i.size === item.size && (i.custom ?? "") === (item.custom ?? ""),
-      );
+      const key = lineKey(item);
+      const existing = prev.find((i) => lineKey(i) === key);
       if (existing) {
         return prev.map((i) =>
           i === existing ? { ...i, quantity: Math.min(20, i.quantity + item.quantity) } : i,
@@ -57,16 +66,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const remove = useCallback((productId: string, size: string) => {
-    setItems((prev) => prev.filter((i) => !(i.productId === productId && i.size === size)));
+  const remove = useCallback((key: string) => {
+    setItems((prev) => prev.filter((i) => lineKey(i) !== key));
   }, []);
 
-  const setQuantity = useCallback((productId: string, size: string, quantity: number) => {
+  const setQuantity = useCallback((key: string, quantity: number) => {
     setItems((prev) =>
       prev.map((i) =>
-        i.productId === productId && i.size === size
-          ? { ...i, quantity: Math.max(1, Math.min(20, quantity)) }
-          : i,
+        lineKey(i) === key ? { ...i, quantity: Math.max(1, Math.min(20, quantity)) } : i,
       ),
     );
   }, []);

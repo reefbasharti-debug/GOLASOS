@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCart } from "@/lib/cart";
+import { useCart, lineKey } from "@/lib/cart";
 import { imageUrl } from "@/lib/img";
 
 export const Route = createFileRoute("/cart")({
@@ -33,7 +33,7 @@ function CartPage() {
           <ul className="mt-6 space-y-3">
             {items.map((item) => (
               <li
-                key={`${item.productId}-${item.size}`}
+                key={lineKey(item)}
                 className="flex items-center gap-4 rounded-lg border bg-card p-3"
               >
                 <div className="size-20 shrink-0 overflow-hidden rounded bg-muted">
@@ -49,13 +49,16 @@ function CartPage() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">{item.name}</p>
                   {item.size ? <p className="text-xs text-muted-foreground">מידה: {item.size}</p> : null}
-                  {item.custom ? <p className="text-xs text-muted-foreground">הדפסה: {item.custom}</p> : null}
+                  {item.version === "player" ? (
+                    <p className="text-xs text-muted-foreground">גרסת שחקן (+15 ₪)</p>
+                  ) : null}
+                  {item.custom ? <p className="text-xs text-muted-foreground">הדפסה: {item.custom} (+10 ₪)</p> : null}
                   <p className="text-sm font-bold">{item.price} ₪</p>
                 </div>
                 <div className="flex items-center rounded-md border">
                   <button
                     className="focus-key px-3 py-2"
-                    onClick={() => setQuantity(item.productId, item.size, item.quantity - 1)}
+                    onClick={() => setQuantity(lineKey(item), item.quantity - 1)}
                     aria-label="הפחתת כמות"
                   >
                     −
@@ -63,14 +66,14 @@ function CartPage() {
                   <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
                   <button
                     className="focus-key px-3 py-2"
-                    onClick={() => setQuantity(item.productId, item.size, item.quantity + 1)}
+                    onClick={() => setQuantity(lineKey(item), item.quantity + 1)}
                     aria-label="הוספת כמות"
                   >
                     +
                   </button>
                 </div>
                 <button
-                  onClick={() => remove(item.productId, item.size)}
+                  onClick={() => remove(lineKey(item))}
                   className="focus-key rounded px-2 py-2 text-xs font-semibold text-destructive"
                 >
                   הסרה
