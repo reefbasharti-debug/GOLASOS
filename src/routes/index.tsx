@@ -7,6 +7,7 @@ import { DEFAULT_SLIDES, HeroSlider } from "@/components/HeroSlider";
 import { groupCategories } from "@/lib/catalog";
 import { getHomeData } from "@/lib/store.functions";
 import { useLang, type TKey } from "@/lib/i18n";
+import { Advantages, BestsellersStrip, Testimonials, TopTeams } from "@/components/HomeSections";
 
 const rootApi = getRouteApi("__root__");
 
@@ -124,6 +125,14 @@ function Index() {
           ) : null}
         </section>
       ))}
+
+      <TopTeams teams={home.topTeams} />
+
+      <BestsellersStrip products={home.bestsellers} />
+
+      <Testimonials items={home.testimonials} />
+
+      <Advantages />
 
       <TabbedProducts tabs={[{ key: "clubs", items: home.club, to: "/categories" }]} />
 

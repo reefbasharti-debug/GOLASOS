@@ -5,6 +5,7 @@ import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { groupCategories, type CatalogCategory, type CatalogGroupMeta } from "@/lib/catalog";
+import { MarqueeBar } from "@/components/MarqueeBar";
 
 export type NavCategory = CatalogCategory;
 
@@ -46,6 +47,13 @@ export function Logo({ className = "" }: { className?: string }) {
 }
 
 const MAIN_NAV_LIMIT = 7;
+
+/** Audience entries that open the faceted catalog. */
+const PRIMARY_NAV = [
+  { label: "גברים", search: { audience: "men" } },
+  { label: "ילדים", search: { audience: "kids" } },
+  { label: "נשים", search: { audience: "women" } },
+] as const;
 const SPECIAL_GROUP_NAME = "קולקציות מיוחדות";
 
 export function Header({
@@ -72,7 +80,7 @@ export function Header({
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
     const term = q.trim();
-    if (term) navigate({ to: "/search", search: { q: term } });
+    if (term) navigate({ to: "/browse", search: { q: term } });
   };
 
   const social = [
@@ -85,6 +93,8 @@ export function Header({
 
   return (
     <header className="bg-background">
+      <MarqueeBar />
+
       {/* Announcement bar */}
       {announceOpen ? (
         <div className="announce relative bg-primary text-center text-xs font-bold text-primary-foreground">
@@ -148,8 +158,29 @@ export function Header({
                   <Link to="/" onClick={() => setOpen(false)} className="nav-key gap-1.5 text-sm">
                     <Home className="size-4" /> {t("home")}
                   </Link>
+                  {PRIMARY_NAV.map((item) => (
+                    <Link
+                      key={item.label}
+                      to="/browse"
+                      search={item.search}
+                      onClick={() => setOpen(false)}
+                      className="nav-key gap-1.5 text-sm"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
                   <Link to="/shoes" onClick={() => setOpen(false)} className="nav-key gap-1.5 text-sm">
                     <Footprints className="size-4" /> {t("shoes")}
+                  </Link>
+                  <Link to="/browse" search={{ sport: "basketball" }} onClick={() => setOpen(false)} className="nav-key text-sm">
+                    NBA
+                  </Link>
+                  <Link
+                    to="/mystery-box"
+                    onClick={() => setOpen(false)}
+                    className="mystery-glow flex items-center gap-2 rounded-full bg-gold px-3 py-2 text-sm font-extrabold text-navy"
+                  >
+                    <Package className="size-4" /> {t("mystery_box")}
                   </Link>
                 </div>
                 {groups.map((g) => (
@@ -191,14 +222,23 @@ export function Header({
                   </details>
                 ))}
               </nav>
-              <Link
-                to="/auth"
-                onClick={() => setOpen(false)}
-                className="btn-critical-sm focus-key mt-4 flex w-full items-center justify-center gap-2"
-              >
-                <User className="size-4" />
-                {t("sign_in")}
-              </Link>
+              <div className="mt-4 space-y-2">
+                <Link
+                  to="/account"
+                  onClick={() => setOpen(false)}
+                  className="btn-critical-sm focus-key flex w-full items-center justify-center gap-2"
+                >
+                  <User className="size-4" />
+                  האזור האישי
+                </Link>
+                <Link
+                  to="/affiliate"
+                  onClick={() => setOpen(false)}
+                  className="focus-key flex w-full items-center justify-center rounded-md border px-4 py-2 text-sm font-bold"
+                >
+                  חבר מביא חבר
+                </Link>
+              </div>
             </SheetContent>
           </Sheet>
           <Logo />
@@ -220,9 +260,9 @@ export function Header({
         </form>
 
         <div className="flex items-center gap-5">
-          <Link to="/auth" className="focus-key hidden items-center gap-1.5 rounded px-1 text-xs font-medium hover:underline md:flex">
+          <Link to="/account" className="focus-key hidden items-center gap-1.5 rounded px-1 text-xs font-medium hover:underline md:flex">
             <User className="size-4" />
-            {t("sign_in")}
+            האזור האישי
           </Link>
           <Link to="/cart" className="focus-key relative rounded-md p-1" aria-label={t("cart")}>
             <ShoppingCart className="size-6" />
@@ -275,10 +315,24 @@ export function Header({
           </div>
         </div>
 
-        <nav className="flex flex-1 flex-wrap items-center gap-x-6 ps-6 text-sm font-bold">
-          <Link to="/" className="nav-key my-1.5 flex items-center gap-1.5">
-            <Home className="size-3.5" />
-            {t("home")}
+        <nav className="flex flex-1 flex-wrap items-center gap-x-5 ps-6 text-sm font-bold">
+          {PRIMARY_NAV.map((item) => (
+            <Link
+              key={item.label}
+              to="/browse"
+              search={item.search}
+              className="nav-key my-1.5 flex items-center gap-1.5"
+            >
+              {item.label}
+            </Link>
+          ))}
+
+          <Link to="/mystery-box" className="mystery-glow my-1.5 flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-sm font-extrabold text-navy">
+            <span className="relative">
+              <Package className="size-4" />
+              <HelpCircle className="absolute -bottom-1 -end-1 size-2.5 text-navy" />
+            </span>
+            {t("mystery_box")}
           </Link>
 
           <Link to="/shoes" className="nav-key my-1.5 flex items-center gap-1.5">
@@ -286,27 +340,21 @@ export function Header({
             {t("shoes")}
           </Link>
 
+          <Link to="/browse" search={{ sport: "basketball" }} className="nav-key my-1.5">
+            NBA
+          </Link>
+
           {specialGroup ? (
-            <div key={specialGroup.name} className="group relative py-3">
+            <div className="group relative py-3">
               <Link
                 to="/categories"
                 hash={`g-${encodeURIComponent(specialGroup.name)}`}
-                className="nav-key -my-1.5 flex items-center gap-1"
+                className="flex items-center gap-1 hover:text-primary/70"
               >
                 <Star className="size-3.5" />
                 {specialGroup.name} <ChevronDown className="size-3.5" />
               </Link>
               <div className="absolute start-0 top-full z-40 hidden w-[34rem] border bg-popover p-4 shadow-elevated group-hover:block">
-                <Link
-                  to="/mystery-box"
-                  className="mystery-glow mb-3 flex items-center justify-center gap-2 rounded-lg bg-navy px-4 py-2.5 text-sm font-extrabold text-white"
-                >
-                  <span className="relative">
-                    <Package className="size-4" />
-                    <HelpCircle className="absolute -bottom-1 -end-1 size-2.5 text-gold" />
-                  </span>
-                  {t("mystery_box")}
-                </Link>
                 <div className="grid grid-cols-3 gap-x-4 gap-y-1">
                   {specialGroup.items.slice(0, 30).map((c) => (
                     <Link
@@ -324,7 +372,7 @@ export function Header({
             </div>
           ) : null}
 
-          {mainNav.map((g) => (
+          {mainNav.slice(0, 3).map((g) => (
             <div key={g.name} className="group relative py-3">
               <Link
                 to="/categories"
