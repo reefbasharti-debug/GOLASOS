@@ -17,6 +17,8 @@ import { LangProvider } from "@/lib/i18n";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import { PurchaseToasts } from "@/components/PurchaseToasts";
+import { ChatWidget } from "@/components/ChatWidget";
 
 function NotFoundComponent() {
   return (
@@ -121,6 +123,12 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const data = Route.useLoaderData();
 
+  // Remember the referral code from a shared "?ref=" link for later checkout.
+  useEffect(() => {
+    const ref = new URLSearchParams(window.location.search).get("ref");
+    if (ref) localStorage.setItem("golassos-ref", ref.trim().slice(0, 20).toUpperCase());
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <LangProvider>
@@ -133,6 +141,8 @@ function RootComponent() {
           </main>
           <Footer settings={data?.settings ?? {}} groups={data?.groups ?? []} />
         </div>
+        <PurchaseToasts products={data?.ticker ?? []} />
+        <ChatWidget />
         <Toaster position="top-center" richColors />
       </CartProvider>
       </LangProvider>
