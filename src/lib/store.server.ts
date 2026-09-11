@@ -241,13 +241,15 @@ export async function trackOrder(orderNumber: number, phone: string) {
   const digits = phone.replace(/\D/g, "");
   const { data: order } = await supabaseAdmin
     .from("orders")
-    .select("id, order_number, status, total_ils, created_at, phone, customer_name")
+    .select(
+      "id, order_number, status, total_ils, created_at, phone, customer_name, tracking_number, shipped_at, payment_status, paid_at",
+    )
     .eq("order_number", orderNumber)
     .maybeSingle();
   if (!order || order.phone.replace(/\D/g, "").slice(-7) !== digits.slice(-7)) return { order: null, items: [] };
   const { data: items } = await supabaseAdmin
     .from("order_items")
-    .select("product_name, size, quantity, unit_price_ils")
+    .select("product_name, size, quantity, unit_price_ils, version, custom_text")
     .eq("order_id", order.id);
   return {
     order: {
@@ -256,6 +258,10 @@ export async function trackOrder(orderNumber: number, phone: string) {
       total: Number(order.total_ils),
       createdAt: order.created_at,
       customerName: order.customer_name,
+      trackingNumber: order.tracking_number,
+      shippedAt: order.shipped_at,
+      paymentStatus: order.payment_status,
+      paidAt: order.paid_at,
     },
     items: items ?? [],
   };
