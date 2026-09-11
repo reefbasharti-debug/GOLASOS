@@ -1,12 +1,15 @@
 # Roadmap — site restructure (Sep 2026)
-- [ ] DB: products audience/sport/item_type; orders user_id/tracking/referral/credit; profiles, referrals, support_tickets, testimonials
-- [ ] Header: nav גברים / ילדים / נשים / מיסטרי בוקס (glow) / נעליים / NBA; filter search; cart + account top-left; black marquee bar (אחים לחיים + חבר מביא חבר)
-- [ ] Browse page with filters (league, item type, team, color, price, audience, sport)
-- [ ] Product page: size, fan/player (+15), name & number (+10) — priced in cart + server
-- [ ] Home: top-10 team logos, auto-scrolling bestsellers, testimonials (chat style), advantages strip
-- [ ] Desktop-only random purchase toasts (bottom-left)
-- [ ] Floating scripted support chatbot (right side) with email/telegram handoff + ticket storage
-- [ ] Customer accounts: /account (orders, status, tracking, profile/email/password, payment pref, delete account)
-- [ ] Affiliate page + referral links (15 ₪ credit per new buyer), credit usable at checkout
-- [ ] Google Sheets: append orders; pull tracking numbers back into site
-- [ ] Admin: tickets + testimonials + tracking column
+- [x] DB: products audience/sport/item_type; orders user_id/tracking/referral/credit; profiles, referrals, support_tickets, testimonials
+- [x] Header: nav גברים / ילדים / נשים / מיסטרי בוקס (glow) / נעליים / NBA; filter search; cart + account top-left; black marquee bar (אחים לחיים + חבר מביא חבר)
+- [x] Browse page with filters (league, item type, team, color, price, audience, sport)
+- [x] Product page: size, fan/player (+15), name & number (+10) — priced in cart + server
+- [x] Home: top-10 team logos, auto-scrolling bestsellers, testimonials (chat style), advantages strip
+- [x] Desktop-only random purchase toasts (bottom-left)
+- [x] Floating scripted support chatbot (right side) with email/telegram handoff + ticket storage
+- [x] Customer accounts: /account (orders, status, tracking, profile/email/password, payment pref, delete account)
+- [x] Affiliate page + referral links (15 ₪ credit per new buyer), credit usable at checkout
+- [x] Admin: tickets + testimonials + tracking column + manual sheet-sync button
+- [ ] Google Sheets append/pull — code ready; blocked on owner connecting a Google Sheets account and setting מזהה גיליון in admin settings
+- [ ] Telegram order alerts — blocked on numeric chat ID (owner must message the bot)
+- [ ] Email order alerts — blocked on Resend API key + verified sender
+- [ ] Real card/PayPal/Apple Pay checkout — blocked on choosing a payment provider
