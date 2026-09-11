@@ -22,21 +22,39 @@ import { ChatWidget } from "@/components/ChatWidget";
 import { CookieConsent } from "@/components/CookieConsent";
 
 function NotFoundComponent() {
+  const links: Array<{ to: string; label: string }> = [
+    { to: "/", label: "דף הבית" },
+    { to: "/browse", label: "כל המוצרים" },
+    { to: "/shoes", label: "נעלי כדורגל" },
+    { to: "/mystery-box", label: "מיסטרי בוקס" },
+    { to: "/tracking", label: "מעקב הזמנה" },
+    { to: "/contact", label: "צור קשר" },
+  ];
+
   return (
-    <div className="flex min-h-[60vh] items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">הדף לא נמצא</h2>
-        <p className="mt-2 text-sm text-muted-foreground">הדף שחיפשת אינו קיים או הועבר.</p>
-        <div className="mt-6">
+    <div className="mx-auto max-w-2xl px-4 py-20 text-center">
+      <p className="font-display text-7xl font-extrabold text-primary">404</p>
+      <h1 className="mt-4 text-2xl font-bold text-foreground">הדף לא נמצא</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        הדף שחיפשתם אינו קיים, הועבר או שהמוצר כבר לא במלאי. אפשר להמשיך מכאן:
+      </p>
+      <div className="mt-6 flex flex-wrap justify-center gap-2">
+        {links.map((l) => (
           <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            key={l.to}
+            to={l.to}
+            className="btn-critical-ghost focus-key inline-flex min-h-11 items-center rounded-md px-4 text-sm font-bold"
           >
-            חזרה לדף הבית
+            {l.label}
           </Link>
-        </div>
+        ))}
       </div>
+      <Link
+        to="/browse"
+        className="btn-critical focus-key mt-8 inline-flex min-h-12 items-center rounded-md px-8 text-base font-extrabold"
+      >
+        התחילו לקנות
+      </Link>
     </div>
   );
 }
