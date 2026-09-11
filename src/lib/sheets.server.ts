@@ -118,10 +118,14 @@ export async function pullTrackingFromSheet(): Promise<{ ok: boolean; updated: n
         .eq("order_number", orderNumber)
         .maybeSingle();
       if (!order || order.tracking_number === tracking) continue;
-      const patch: Record<string, string> = { tracking_number: tracking };
+      const patch: {
+        tracking_number: string;
+        status?: string;
+        shipped_at?: string;
+      } = { tracking_number: tracking };
       if (order.status !== "delivered") {
-        patch["status"] = "shipped";
-        patch["shipped_at"] = new Date().toISOString();
+        patch.status = "shipped";
+        patch.shipped_at = new Date().toISOString();
       }
       await supabaseAdmin.from("orders").update(patch).eq("id", order.id);
       updated += 1;

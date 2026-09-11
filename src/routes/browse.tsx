@@ -3,17 +3,17 @@ import { getBrowse } from "@/lib/store.functions";
 import { ProductCard } from "@/components/ProductCard";
 
 type Search = {
-  audience?: string;
-  sport?: string;
-  item?: string;
-  league?: string;
-  team?: string;
-  color?: string;
-  size?: string;
-  min?: number;
-  max?: number;
-  q?: string;
-  sort?: string;
+  audience?: string | undefined;
+  sport?: string | undefined;
+  item?: string | undefined;
+  league?: string | undefined;
+  team?: string | undefined;
+  color?: string | undefined;
+  size?: string | undefined;
+  min?: number | undefined;
+  max?: number | undefined;
+  q?: string | undefined;
+  sort?: string | undefined;
 };
 
 const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 120) : undefined);
