@@ -105,7 +105,7 @@ export function Header({
       <MarqueeBar />
 
       {/* Utility bar */}
-      <div className="border-b">
+      <div>
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-xs">
           <div className="flex items-center gap-4">
             <Link to="/tracking" className="focus-key rounded px-1 hover:text-accent-foreground hover:underline">
