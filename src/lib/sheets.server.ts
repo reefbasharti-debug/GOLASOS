@@ -112,7 +112,7 @@ export async function appendOrderToSheet(row: SheetOrderRow): Promise<{ ok: bool
         row.orderNumber,
         i === 0 ? date : "",
         i === 0 ? row.customerName : "",
-        i === 0 ? row.phone : "",
+        i === 0 ? `'${row.phone}` : "",
         i === 0 ? row.email : "",
         i === 0 ? row.fullAddress : "",
         img ? `=IMAGE("${img}")` : "",
