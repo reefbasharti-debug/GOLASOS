@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AccessibilityRouteImport } from './routes/accessibility'
 import { Route as AffiliateRouteImport } from './routes/affiliate'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BrowseRouteImport } from './routes/browse'
@@ -20,8 +21,11 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as MysteryBoxRouteImport } from './routes/mystery-box'
 import { Route as OrderReceivedRouteImport } from './routes/order-received'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ShoesRouteImport } from './routes/shoes'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TrackingRouteImport } from './routes/tracking'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -37,6 +41,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessibilityRoute = AccessibilityRouteImport.update({
+  id: '/accessibility',
+  path: '/accessibility',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AffiliateRoute = AffiliateRouteImport.update({
@@ -84,6 +93,11 @@ const OrderReceivedRoute = OrderReceivedRouteImport.update({
   path: '/order-received',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -92,6 +106,16 @@ const SearchRoute = SearchRouteImport.update({
 const ShoesRoute = ShoesRouteImport.update({
   id: '/shoes',
   path: '/shoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackingRoute = TrackingRouteImport.update({
@@ -132,6 +156,7 @@ const ApiPublicSheetSyncRoute = ApiPublicSheetSyncRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accessibility': typeof AccessibilityRoute
   '/affiliate': typeof AffiliateRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
@@ -141,8 +166,11 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/mystery-box': typeof MysteryBoxRoute
   '/order-received': typeof OrderReceivedRoute
+  '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/shoes': typeof ShoesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/tracking': typeof TrackingRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -153,6 +181,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accessibility': typeof AccessibilityRoute
   '/affiliate': typeof AffiliateRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
@@ -162,8 +191,11 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/mystery-box': typeof MysteryBoxRoute
   '/order-received': typeof OrderReceivedRoute
+  '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/shoes': typeof ShoesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/tracking': typeof TrackingRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -176,6 +208,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/accessibility': typeof AccessibilityRoute
   '/affiliate': typeof AffiliateRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
@@ -185,8 +218,11 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/mystery-box': typeof MysteryBoxRoute
   '/order-received': typeof OrderReceivedRoute
+  '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/shoes': typeof ShoesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/tracking': typeof TrackingRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -199,6 +235,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accessibility'
     | '/affiliate'
     | '/auth'
     | '/browse'
@@ -208,8 +245,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/mystery-box'
     | '/order-received'
+    | '/privacy'
     | '/search'
     | '/shoes'
+    | '/sitemap.xml'
+    | '/terms'
     | '/tracking'
     | '/account'
     | '/admin'
@@ -220,6 +260,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accessibility'
     | '/affiliate'
     | '/auth'
     | '/browse'
@@ -229,8 +270,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/mystery-box'
     | '/order-received'
+    | '/privacy'
     | '/search'
     | '/shoes'
+    | '/sitemap.xml'
+    | '/terms'
     | '/tracking'
     | '/account'
     | '/admin'
@@ -242,6 +286,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/accessibility'
     | '/affiliate'
     | '/auth'
     | '/browse'
@@ -251,8 +296,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/mystery-box'
     | '/order-received'
+    | '/privacy'
     | '/search'
     | '/shoes'
+    | '/sitemap.xml'
+    | '/terms'
     | '/tracking'
     | '/_authenticated/account'
     | '/_authenticated/admin'
@@ -265,6 +313,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AccessibilityRoute: typeof AccessibilityRoute
   AffiliateRoute: typeof AffiliateRoute
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
@@ -274,8 +323,11 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   MysteryBoxRoute: typeof MysteryBoxRoute
   OrderReceivedRoute: typeof OrderReceivedRoute
+  PrivacyRoute: typeof PrivacyRoute
   SearchRoute: typeof SearchRoute
   ShoesRoute: typeof ShoesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   TrackingRoute: typeof TrackingRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductIdRoute: typeof ProductIdRoute
@@ -297,6 +349,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessibility': {
+      id: '/accessibility'
+      path: '/accessibility'
+      fullPath: '/accessibility'
+      preLoaderRoute: typeof AccessibilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/affiliate': {
@@ -362,6 +421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderReceivedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -374,6 +440,20 @@ declare module '@tanstack/react-router' {
       path: '/shoes'
       fullPath: '/shoes'
       preLoaderRoute: typeof ShoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tracking': {
@@ -444,6 +524,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AccessibilityRoute: AccessibilityRoute,
   AffiliateRoute: AffiliateRoute,
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
@@ -453,8 +534,11 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   MysteryBoxRoute: MysteryBoxRoute,
   OrderReceivedRoute: OrderReceivedRoute,
+  PrivacyRoute: PrivacyRoute,
   SearchRoute: SearchRoute,
   ShoesRoute: ShoesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   TrackingRoute: TrackingRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductIdRoute: ProductIdRoute,

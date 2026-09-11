@@ -19,6 +19,7 @@ import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { PurchaseToasts } from "@/components/PurchaseToasts";
 import { ChatWidget } from "@/components/ChatWidget";
+import { CookieConsent } from "@/components/CookieConsent";
 
 function NotFoundComponent() {
   return (
@@ -95,7 +96,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Rubik:wght@500;700;800&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/favicon.png" },
     ],
   }),
   loader: () => getStoreData(),
@@ -143,6 +145,7 @@ function RootComponent() {
         </div>
         <PurchaseToasts products={data?.ticker ?? []} />
         <ChatWidget />
+        <CookieConsent />
         <Toaster position="top-center" richColors />
       </CartProvider>
       </LangProvider>

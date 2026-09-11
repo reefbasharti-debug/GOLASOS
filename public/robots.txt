@@ -1,3 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /cart
+Disallow: /account
+Disallow: /order-received
+Disallow: /auth
+Disallow: /api/
+
 User-agent: Googlebot
 Allow: /
 
@@ -8,7 +18,4 @@ User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
-Allow: /
-
-User-agent: *
 Allow: /

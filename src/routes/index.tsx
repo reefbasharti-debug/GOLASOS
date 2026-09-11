@@ -2,12 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { DEFAULT_SLIDES, HeroSlider } from "@/components/HeroSlider";
 import { getHomeData } from "@/lib/store.functions";
+import { getRequestOrigin } from "@/lib/origin.functions";
 import { useLang } from "@/lib/i18n";
 import { Advantages, BestsellersStrip, Testimonials, TopTeams } from "@/components/HomeSections";
 
 export const Route = createFileRoute("/")({
-  loader: () => getHomeData(),
-  head: () => ({
+  loader: async () => {
+    const [home, origin] = await Promise.all([getHomeData(), getRequestOrigin()]);
+    return { ...home, origin };
+  },
+  head: ({ loaderData }) => ({
     meta: [
       { title: "גולאסוס | חולצות כדורגל ונעליים במשלוח לכל הארץ" },
       {
@@ -20,7 +24,16 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "חולצות הקבוצות הפופולריות בעולם, נעלי כדורגל ומיסטרי בוקס — הזמנה ישירה באתר.",
       },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "/" },
+      ...(loaderData?.origin
+        ? [
+            { property: "og:image", content: `${loaderData.origin}/og-image.jpg` },
+            { name: "twitter:image", content: `${loaderData.origin}/og-image.jpg` },
+          ]
+        : []),
     ],
+    links: [{ rel: "canonical", href: "/" }],
   }),
   component: Index,
 });

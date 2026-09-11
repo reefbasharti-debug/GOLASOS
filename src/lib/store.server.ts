@@ -585,3 +585,15 @@ export async function loadPurchaseTicker() {
     .limit(60);
   return data ?? [];
 }
+
+/** Active category slugs, used to build the XML sitemap. */
+export async function loadSitemapCategorySlugs(): Promise<string[]> {
+  const sb = publicClient();
+  const { data } = await sb
+    .from("categories")
+    .select("slug")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true })
+    .limit(1000);
+  return (data ?? []).map((r) => r.slug).filter((s): s is string => Boolean(s));
+}

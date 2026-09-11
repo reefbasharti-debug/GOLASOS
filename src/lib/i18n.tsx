@@ -111,7 +111,19 @@ const DICT = {
   rights: ["כל הזכויות שמורות.", "All rights reserved."],
   leagues: ["ליגות", "Leagues"],
   mystery_box: ["מיסטרי בוקס", "Mystery Box"],
+  legal: ["מידע משפטי", "Legal"],
+  privacy_policy: ["מדיניות פרטיות", "Privacy Policy"],
+  terms_page: ["תקנון ותנאי שימוש", "Terms & Conditions"],
+  accessibility: ["הצהרת נגישות", "Accessibility"],
+  cookie_title: ["עוגיות באתר.", "Cookies on this site."],
+  cookie_text: [
+    "אנחנו משתמשים בעוגיות הכרחיות לתפעול העגלה, השפה וההתחברות, ובמידע סטטיסטי כדי לשפר את החנות. פרטים מלאים:",
+    "We use essential cookies for the cart, language and sign-in, plus anonymous statistics to improve the store. Full details:",
+  ],
+  cookie_accept: ["אישור הכל", "Accept all"],
+  cookie_essential: ["רק הכרחיות", "Essential only"],
   lang_switch: ["English", "עברית"],
+
 } as const;
 
 export type TKey = keyof typeof DICT;

@@ -15,8 +15,8 @@ const formSchema = z.object({
     .trim()
     .regex(/^[0-9+\-\s]{8,20}$/, "נא להזין מספר טלפון תקין"),
   email: z.string().trim().email("נא להזין אימייל תקין").max(200).optional().or(z.literal("")),
-  city: z.string().trim().max(80),
-  address: z.string().trim().max(200),
+  city: z.string().trim().min(2, "נא להזין עיר").max(80),
+  address: z.string().trim().min(4, "נא להזין כתובת מלאה למשלוח").max(200),
   notes: z.string().trim().max(600),
 });
 
@@ -43,6 +43,9 @@ function CheckoutPage() {
   const [useCredit, setUseCredit] = useState(true);
   const [referral, setReferral] = useState("");
   const [pending, setPending] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [accepted, setAccepted] = useState(false);
+  const [bot, setBot] = useState("");
   const [shipping, setShipping] = useState<"free" | "express">("free");
   const shippingCost = shipping === "express" ? 50 : 0;
   const [form, setForm] = useState({
@@ -76,12 +79,23 @@ function CheckoutPage() {
     })();
   }, [fetchAccount]);
 
+  const errorFor = (key: string) =>
+    errors[key] ? (
+      <p id={`checkout-${key}-error`} className="mt-1 text-xs font-semibold text-destructive">
+        {errors[key]}
+      </p>
+    ) : null;
+
   const field = (key: keyof typeof form) => ({
     name: key,
     id: `checkout-${key}`,
     value: form[key],
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      setForm((f) => ({ ...f, [key]: e.target.value })),
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setErrors((prev) => (prev[key] ? { ...prev, [key]: "" } : prev));
+      setForm((f) => ({ ...f, [key]: e.target.value }));
+    },
+    "aria-invalid": errors[key] ? true : undefined,
+    "aria-describedby": errors[key] ? `checkout-${key}-error` : undefined,
   });
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -90,9 +104,23 @@ function CheckoutPage() {
       toast.error("העגלה ריקה");
       return;
     }
+    // Honeypot: hidden field only bots fill in.
+    if (bot.trim()) return;
     const parsed = formSchema.safeParse(form);
     if (!parsed.success) {
+      const map: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const key = String(issue.path[0] ?? "");
+        if (key && !map[key]) map[key] = issue.message;
+      }
+      setErrors(map);
       toast.error(parsed.error.issues[0]?.message ?? "נא לבדוק את הפרטים");
+      document.getElementById(`checkout-${Object.keys(map)[0]}`)?.focus();
+      return;
+    }
+    setErrors({});
+    if (!accepted) {
+      toast.error("יש לאשר את התקנון ומדיניות הפרטיות");
       return;
     }
 
@@ -140,39 +168,57 @@ function CheckoutPage() {
     <div className="mx-auto max-w-5xl px-4 py-10">
       <h1 className="text-3xl font-bold">סיום הזמנה</h1>
       <div className="mt-6 grid gap-8 md:grid-cols-[3fr_2fr]">
-        <form onSubmit={onSubmit} className="space-y-4 rounded-lg border bg-card p-5">
+        <form onSubmit={onSubmit} className="space-y-4 rounded-lg border bg-card p-5" noValidate>
+          <input
+            type="text"
+            name="company_website"
+            value={bot}
+            onChange={(e) => setBot(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="hidden"
+          />
           <div>
-            <label className="mb-1 block text-sm font-semibold">שם מלא *</label>
-            <input {...field("customerName")} className="w-full rounded-md border px-3 py-2" maxLength={80} />
+            <label htmlFor="checkout-customerName" className="mb-1 block text-sm font-semibold">שם מלא *</label>
+            <input {...field("customerName")} required autoComplete="name" className="w-full rounded-md border px-3 py-2 focus-key" maxLength={80} />
+            {errorFor("customerName")}
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-semibold">טלפון *</label>
+              <label htmlFor="checkout-phone" className="mb-1 block text-sm font-semibold">טלפון *</label>
               <input
                 {...field("phone")}
                 inputMode="tel"
-                className="w-full rounded-md border px-3 py-2"
+                required
+                autoComplete="tel"
+                className="w-full rounded-md border px-3 py-2 focus-key"
                 maxLength={20}
               />
+              {errorFor("phone")}
             </div>
             <div>
-              <label className="mb-1 block text-sm font-semibold">אימייל</label>
+              <label htmlFor="checkout-email" className="mb-1 block text-sm font-semibold">אימייל</label>
               <input
                 {...field("email")}
                 type="email"
-                className="w-full rounded-md border px-3 py-2"
+                autoComplete="email"
+                className="w-full rounded-md border px-3 py-2 focus-key"
                 maxLength={200}
               />
+              {errorFor("email")}
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-semibold">עיר</label>
-              <input {...field("city")} className="w-full rounded-md border px-3 py-2" maxLength={80} />
+              <label htmlFor="checkout-city" className="mb-1 block text-sm font-semibold">עיר *</label>
+              <input {...field("city")} required autoComplete="address-level2" className="w-full rounded-md border px-3 py-2 focus-key" maxLength={80} />
+              {errorFor("city")}
             </div>
             <div>
-              <label className="mb-1 block text-sm font-semibold">כתובת</label>
-              <input {...field("address")} className="w-full rounded-md border px-3 py-2" maxLength={200} />
+              <label htmlFor="checkout-address" className="mb-1 block text-sm font-semibold">כתובת *</label>
+              <input {...field("address")} required autoComplete="street-address" className="w-full rounded-md border px-3 py-2 focus-key" maxLength={200} />
+              {errorFor("address")}
             </div>
           </div>
           <fieldset className="rounded-md border p-3">
@@ -231,10 +277,25 @@ function CheckoutPage() {
             />
           </div>
 
+          <label className="flex cursor-pointer items-start gap-2 rounded-md border p-3 text-xs leading-relaxed">
+            <input
+              type="checkbox"
+              checked={accepted}
+              onChange={(e) => setAccepted(e.target.checked)}
+              className="mt-0.5 size-4 focus-key"
+              required
+            />
+            <span>
+              קראתי ואני מאשר/ת את{" "}
+              <Link to="/terms" className="font-semibold underline">התקנון ותנאי השימוש</Link>{" "}ואת{" "}
+              <Link to="/privacy" className="font-semibold underline">מדיניות הפרטיות</Link>, כולל תנאי הביטול וההחזרות.
+            </span>
+          </label>
+
           <button
             type="submit"
-            disabled={pending}
-            className="w-full rounded-md surface-gold px-6 py-3 font-bold shadow-md transition-transform hover:scale-[1.01] disabled:opacity-60"
+            disabled={pending || !accepted}
+            className="btn-critical focus-key w-full min-h-12 rounded-md px-6 py-3 font-bold disabled:opacity-60"
           >
             {pending ? "שולח..." : "שליחת ההזמנה"}
           </button>
