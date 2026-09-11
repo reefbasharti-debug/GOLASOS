@@ -9,6 +9,7 @@ import {
   Instagram,
   Menu,
   Search,
+  PackageSearch,
   ShoppingCart,
   Twitter,
   User,
@@ -225,6 +226,13 @@ export function Header({
         </form>
 
         <div className="flex items-center gap-5">
+          <Link
+            to="/tracking"
+            className="focus-key hidden items-center gap-1.5 rounded px-1 text-xs font-medium hover:underline md:flex"
+          >
+            <PackageSearch className="size-4" />
+            פרטי ההזמנה
+          </Link>
           <Link
             to="/account"
             className="focus-key hidden items-center gap-1.5 rounded px-1 text-xs font-medium hover:underline md:flex"
