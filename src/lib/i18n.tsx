@@ -160,11 +160,19 @@ export function LangProvider({ children }: { children: ReactNode }) {
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 }
 
+const FALLBACK_CTX: Ctx = {
+  lang: "he",
+  setLang: () => {},
+  dir: "rtl",
+  t: (k) => DICT[k][0],
+};
+
 export function useLang(): Ctx {
-  const ctx = useContext(LangContext);
-  if (!ctx) throw new Error("useLang must be used inside LangProvider");
-  return ctx;
+  // Fall back to Hebrew defaults instead of crashing when a component renders
+  // outside the provider (e.g. error boundaries or stale HMR trees).
+  return useContext(LangContext) ?? FALLBACK_CTX;
 }
+
 
 /** Translate an order status code. */
 export function statusKey(status: string): TKey {
