@@ -363,7 +363,7 @@ export async function createOrder(input: OrderInput) {
 
   const { error: itemsError } = await supabaseAdmin
     .from("order_items")
-    .insert(items.map((i) => ({ ...i, order_id: order.id })));
+    .insert(items.map(({ image_url: _img, ...i }) => ({ ...i, order_id: order.id })));
   if (itemsError) throw new Error(itemsError.message);
 
   if (credit > 0 && input.userId) {
@@ -383,9 +383,20 @@ export async function createOrder(input: OrderInput) {
   void appendOrderToSheet({
     createdAt: new Date().toISOString(),
     orderNumber: order.order_number,
+    customerName: input.customerName,
+    phone: input.phone,
     email: input.email ?? "",
+    fullAddress: [input.address, input.city].filter(Boolean).join(", "),
     total,
-    itemCount: items.reduce((n, i) => n + i.quantity, 0),
+    items: items.map((i) => ({
+      productName: i.product_name,
+      imageUrl: i.image_url,
+      size: i.size,
+      version: i.version,
+      customText: i.custom_text,
+      quantity: i.quantity,
+      unitPrice: i.unit_price_ils,
+    })),
   }).catch((e) => console.error("[sheets] append failed", e));
 
   const notification: OrderNotification = {
