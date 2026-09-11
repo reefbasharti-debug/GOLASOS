@@ -13,7 +13,10 @@ import {
   saveSettings,
   updateOrderStatus,
   updatePaymentStatus,
+  updateTracking,
+  syncSheetTracking,
 } from "@/lib/admin.functions";
+import { TicketsTab, TestimonialsTab } from "@/components/admin/SupportTabs";
 import { CustomersTab, PAYMENT_LABEL, PaymentBadge } from "@/components/admin/CustomersTab";
 import { imageUrl } from "@/lib/img";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -101,6 +104,8 @@ function AdminPage() {
           <TabsTrigger value="customers">לקוחות ({data.customers.length})</TabsTrigger>
           <TabsTrigger value="products">מוצרים ({data.products.length})</TabsTrigger>
           <TabsTrigger value="categories">קטגוריות ({data.categories.length})</TabsTrigger>
+          <TabsTrigger value="tickets">פניות שירות ({data.tickets.length})</TabsTrigger>
+          <TabsTrigger value="testimonials">המלצות ({data.testimonials.length})</TabsTrigger>
           <TabsTrigger value="settings">הגדרות והתראות</TabsTrigger>
         </TabsList>
 
@@ -116,6 +121,12 @@ function AdminPage() {
         <TabsContent value="categories">
           <CategoriesTab data={data} onChange={refetch} />
         </TabsContent>
+        <TabsContent value="tickets">
+          <TicketsTab data={data} onChange={refetch} />
+        </TabsContent>
+        <TabsContent value="testimonials">
+          <TestimonialsTab data={data} onChange={refetch} />
+        </TabsContent>
         <TabsContent value="settings">
           <SettingsTab data={data} onChange={refetch} />
         </TabsContent>
@@ -129,6 +140,8 @@ type Overview = Awaited<ReturnType<typeof getAdminOverview>>;
 function OrdersTab({ data, onChange }: { data: Overview; onChange: () => void }) {
   const setStatus = useServerFn(updateOrderStatus);
   const setPayment = useServerFn(updatePaymentStatus);
+  const setTracking = useServerFn(updateTracking);
+  const syncSheet = useServerFn(syncSheetTracking);
   const [filter, setFilter] = useState<"all" | "unpaid" | "paid">("all");
 
   const updatePayment = async (id: string, payment_status: string) => {
@@ -159,6 +172,22 @@ function OrdersTab({ data, onChange }: { data: Overview; onChange: () => void })
 
   return (
     <div className="mt-4 space-y-3">
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <button
+          onClick={async () => {
+            try {
+              const res = await syncSheet({});
+              toast.success(`סונכרנו ${res.updated} מספרי מעקב מגוגל שיטס`);
+              onChange();
+            } catch {
+              toast.error("סנכרון גוגל שיטס נכשל — יש להגדיר חיבור ומזהה גיליון");
+            }
+          }}
+          className="rounded-full border px-3 py-1 font-semibold"
+        >
+          סנכרון מספרי מעקב מגוגל שיטס
+        </button>
+      </div>
       <div className="flex gap-2 text-sm">
         {(["all", "unpaid", "paid"] as const).map((f) => (
           <button
@@ -227,6 +256,39 @@ function OrdersTab({ data, onChange }: { data: Overview; onChange: () => void })
               ))}
             </ul>
             {order.notes ? <p className="mt-2 text-sm">הערות: {order.notes}</p> : null}
+            <div className="mt-3 flex flex-wrap items-center gap-2 border-t pt-3 text-sm">
+              <label className="font-semibold" htmlFor={`track-${order.id}`}>
+                מספר מעקב
+              </label>
+              <input
+                id={`track-${order.id}`}
+                defaultValue={order.tracking_number ?? ""}
+                onBlur={async (e) => {
+                  const value = e.target.value.trim();
+                  if (value === (order.tracking_number ?? "")) return;
+                  try {
+                    await setTracking({ data: { id: order.id, tracking: value } });
+                    toast.success("מספר המעקב עודכן");
+                    onChange();
+                  } catch {
+                    toast.error("עדכון מספר המעקב נכשל");
+                  }
+                }}
+                className="rounded-md border px-2 py-1"
+                maxLength={80}
+              />
+              {order.shipped_at ? (
+                <span className="text-xs text-muted-foreground">
+                  נשלח: {new Date(order.shipped_at).toLocaleString("he-IL")}
+                </span>
+              ) : null}
+              {order.referral_code ? (
+                <span className="text-xs text-muted-foreground">קוד שותף: {order.referral_code}</span>
+              ) : null}
+              {Number(order.credit_used_ils) > 0 ? (
+                <span className="text-xs text-muted-foreground">זיכוי: {Number(order.credit_used_ils)} ₪</span>
+              ) : null}
+            </div>
           </div>
         );
       })}
@@ -462,6 +524,10 @@ function CategoriesTab({ data, onChange }: { data: Overview; onChange: () => voi
 const SETTING_FIELDS: { key: string; label: string; hint?: string }[] = [
   { key: "telegram_chat_id", label: "מזהה צ'אט בטלגרם", hint: "שלחו /start לבוט @SoccerWebot וקבלו כאן התראות" },
   { key: "notify_email", label: "אימייל לקבלת הזמנות" },
+  { key: "support_email", label: "אימייל שירות לקוחות (פניות מהצ'אט)" },
+  { key: "sheet_id", label: "מזהה גיליון גוגל שיטס", hint: "הקוד שמופיע בכתובת הגיליון בין /d/ ל-/edit" },
+  { key: "affiliate_bonus_ils", label: "בונוס חבר מביא חבר (₪)" },
+  { key: "charity_pct", label: "אחוז תרומה שמוצג בפס הרץ" },
   { key: "site_title", label: "שם האתר" },
   { key: "hero_title", label: "כותרת ראשית בדף הבית" },
   { key: "hero_subtitle", label: "תיאור בדף הבית" },
