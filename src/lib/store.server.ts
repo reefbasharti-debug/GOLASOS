@@ -50,10 +50,13 @@ export async function loadStoreData() {
     loadSettings(),
   ]);
 
+  const ticker = await loadPurchaseTicker();
+
   return {
     categories: categories.data ?? [],
     groups: groups.data ?? [],
     featured: featured.data ?? [],
+    ticker,
     settings,
   };
 }
