@@ -105,7 +105,7 @@ export function Header({
       <MarqueeBar />
 
       {/* Utility bar */}
-      <div className="border-b">
+      <div>
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-xs">
           <div className="flex items-center gap-4">
             <Link to="/tracking" className="focus-key rounded px-1 hover:text-accent-foreground hover:underline">
@@ -225,24 +225,24 @@ export function Header({
           </div>
         </form>
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-2">
           <Link
             to="/tracking"
-            className="focus-key hidden items-center gap-1.5 rounded px-1 text-xs font-medium hover:underline md:flex"
+            className="focus-key grid size-10 place-items-center rounded-md p-1 hover:bg-secondary"
+            aria-label={t("tracking")}
           >
-            <PackageSearch className="size-4" />
-            פרטי ההזמנה
+            <PackageSearch className="size-5" />
           </Link>
           <Link
             to="/account"
-            className="focus-key hidden items-center gap-1.5 rounded px-1 text-xs font-medium hover:underline md:flex"
+            className="focus-key grid size-10 place-items-center rounded-md p-1 hover:bg-secondary"
+            aria-label={t("account")}
           >
-            <User className="size-4" />
-            האזור האישי
+            <User className="size-5" />
           </Link>
-          <Link to="/cart" className="focus-key relative rounded-md p-1" aria-label={t("cart")}>
-            <ShoppingCart className="size-6" />
-            <span className="absolute -top-2 -end-2 grid size-4.5 min-w-4.5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
+          <Link to="/cart" className="focus-key relative grid size-10 place-items-center rounded-md p-1 hover:bg-secondary" aria-label={t("cart")}>
+            <ShoppingCart className="size-5" />
+            <span className="absolute -top-1 -end-1 grid size-4.5 min-w-4.5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
               {count}
             </span>
           </Link>
