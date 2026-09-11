@@ -9,7 +9,8 @@
 - [x] Customer accounts: /account (orders, status, tracking, profile/email/password, payment pref, delete account)
 - [x] Affiliate page + referral links (15 ₪ credit per new buyer), credit usable at checkout
 - [x] Admin: tickets + testimonials + tracking column + manual sheet-sync button
-- [ ] Google Sheets append/pull — code ready; blocked on owner connecting a Google Sheets account and setting מזהה גיליון in admin settings
+- [x] Order-details link top-left → /tracking with tracking number, status, chosen sizes, payment date
+- [ ] Google Sheets append/pull — English one-row-per-item sheet with images + blank separator rows; blocked on owner connecting a Google Sheets account and setting מזהה גיליון in admin settings
 - [ ] Telegram order alerts — blocked on numeric chat ID (owner must message the bot)
 - [ ] Email order alerts — blocked on Resend API key + verified sender
 - [ ] Real card/PayPal/Apple Pay checkout — blocked on choosing a payment provider

@@ -241,13 +241,15 @@ export async function trackOrder(orderNumber: number, phone: string) {
   const digits = phone.replace(/\D/g, "");
   const { data: order } = await supabaseAdmin
     .from("orders")
-    .select("id, order_number, status, total_ils, created_at, phone, customer_name")
+    .select(
+      "id, order_number, status, total_ils, created_at, phone, customer_name, tracking_number, shipped_at, payment_status, paid_at",
+    )
     .eq("order_number", orderNumber)
     .maybeSingle();
   if (!order || order.phone.replace(/\D/g, "").slice(-7) !== digits.slice(-7)) return { order: null, items: [] };
   const { data: items } = await supabaseAdmin
     .from("order_items")
-    .select("product_name, size, quantity, unit_price_ils")
+    .select("product_name, size, quantity, unit_price_ils, version, custom_text")
     .eq("order_id", order.id);
   return {
     order: {
@@ -256,6 +258,10 @@ export async function trackOrder(orderNumber: number, phone: string) {
       total: Number(order.total_ils),
       createdAt: order.created_at,
       customerName: order.customer_name,
+      trackingNumber: order.tracking_number,
+      shippedAt: order.shipped_at,
+      paymentStatus: order.payment_status,
+      paidAt: order.paid_at,
     },
     items: items ?? [],
   };
@@ -294,7 +300,7 @@ export async function createOrder(input: OrderInput) {
   const ids = [...new Set(input.items.map((i) => i.productId))];
   const { data: products, error: productError } = await supabaseAdmin
     .from("products")
-    .select("id, name, price_ils")
+    .select("id, name, price_ils, image_url")
     .in("id", ids)
     .eq("is_active", true);
 
@@ -318,6 +324,7 @@ export async function createOrder(input: OrderInput) {
         unit_price_ils: unit,
         version: player ? "player" : "fan",
         custom_text: custom || null,
+        image_url: p.image_url as string | null,
       };
     });
 
@@ -356,7 +363,7 @@ export async function createOrder(input: OrderInput) {
 
   const { error: itemsError } = await supabaseAdmin
     .from("order_items")
-    .insert(items.map((i) => ({ ...i, order_id: order.id })));
+    .insert(items.map(({ image_url: _img, ...i }) => ({ ...i, order_id: order.id })));
   if (itemsError) throw new Error(itemsError.message);
 
   if (credit > 0 && input.userId) {
@@ -376,9 +383,20 @@ export async function createOrder(input: OrderInput) {
   void appendOrderToSheet({
     createdAt: new Date().toISOString(),
     orderNumber: order.order_number,
+    customerName: input.customerName,
+    phone: input.phone,
     email: input.email ?? "",
+    fullAddress: [input.address, input.city].filter(Boolean).join(", "),
     total,
-    itemCount: items.reduce((n, i) => n + i.quantity, 0),
+    items: items.map((i) => ({
+      productName: i.product_name,
+      imageUrl: i.image_url,
+      size: i.size,
+      version: i.version,
+      customText: i.custom_text,
+      quantity: i.quantity,
+      unitPrice: i.unit_price_ils,
+    })),
   }).catch((e) => console.error("[sheets] append failed", e));
 
   const notification: OrderNotification = {
