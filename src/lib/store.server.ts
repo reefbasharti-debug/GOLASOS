@@ -300,7 +300,7 @@ export async function createOrder(input: OrderInput) {
   const ids = [...new Set(input.items.map((i) => i.productId))];
   const { data: products, error: productError } = await supabaseAdmin
     .from("products")
-    .select("id, name, price_ils")
+    .select("id, name, price_ils, image_url")
     .in("id", ids)
     .eq("is_active", true);
 
@@ -324,6 +324,7 @@ export async function createOrder(input: OrderInput) {
         unit_price_ils: unit,
         version: player ? "player" : "fan",
         custom_text: custom || null,
+        image_url: p.image_url as string | null,
       };
     });
 
