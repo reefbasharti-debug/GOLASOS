@@ -19,3 +19,4 @@ Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
+Sitemap: https://project--2e58a4c6-5eec-44bc-ba03-a071cd205b5e.lovable.app/sitemap.xml
