@@ -10,12 +10,12 @@ export type Slide = { image: string; title: string; subtitle: string; to: string
 
 export const DEFAULT_SLIDES: { he: Slide[]; en: Slide[] } = {
   he: [
-    { image: hero1, title: "חולצות כדורגל 65 ₪", subtitle: "כל הקבוצות, כל הנבחרות, כל העונות", to: "/categories", cta: "לכל הקבוצות" },
+    { image: hero1, title: "חולצות כדורגל מ-60 ₪", subtitle: "כל הקבוצות, כל הנבחרות, כל העונות", to: "/categories", cta: "לכל הקבוצות" },
     { image: hero2, title: "נעלי כדורגל מ-300 ₪", subtitle: "נייקי, אדידס, פומה ועוד – בכל המידות", to: "/shoes", cta: "לנעליים" },
     { image: hero3, title: "נבחרות לאומיות", subtitle: "המדים של מונדיאל 2026 כבר כאן", to: "/categories", cta: "לנבחרות" },
   ],
   en: [
-    { image: hero1, title: "Football jerseys 65 ₪", subtitle: "Every club, every national team, every season", to: "/categories", cta: "Shop teams" },
+    { image: hero1, title: "Football jerseys from 60 ₪", subtitle: "Every club, every national team, every season", to: "/categories", cta: "Shop teams" },
     { image: hero2, title: "Football boots from 300 ₪", subtitle: "Nike, adidas, Puma and more – all sizes", to: "/shoes", cta: "Shop boots" },
     { image: hero3, title: "National teams", subtitle: "World Cup 2026 kits are here", to: "/categories", cta: "Shop national" },
   ],
@@ -50,7 +50,7 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
               <div className="px-10 text-background md:px-16">
                 <h2 className="font-display text-3xl font-extrabold drop-shadow md:text-5xl">{s.title}</h2>
                 <p className="mt-2 text-sm font-medium drop-shadow md:text-lg">{s.subtitle}</p>
-                <Link to={s.to} className="mt-5 inline-block rounded-sm bg-accent px-6 py-2.5 text-sm font-bold text-accent-foreground shadow-md">
+                <Link to={s.to} className="btn-critical focus-key mt-5 inline-flex min-h-12 items-center rounded-md px-7 py-3 text-base font-extrabold">
                   {s.cta}
                 </Link>
               </div>

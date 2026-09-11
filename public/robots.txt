@@ -1,3 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /cart
+Disallow: /account
+Disallow: /order-received
+Disallow: /auth
+Disallow: /api/
+
 User-agent: Googlebot
 Allow: /
 
@@ -9,6 +19,4 @@ Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
-
-User-agent: *
-Allow: /
+Sitemap: https://project--2e58a4c6-5eec-44bc-ba03-a071cd205b5e.lovable.app/sitemap.xml

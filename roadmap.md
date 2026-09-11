@@ -14,3 +14,6 @@
 - [ ] Telegram order alerts — blocked on numeric chat ID (owner must message the bot)
 - [ ] Email order alerts — blocked on Resend API key + verified sender
 - [ ] Real card/PayPal/Apple Pay checkout — blocked on choosing a payment provider
+- [x] Legal/SEO pack: privacy, terms, accessibility pages; cookie consent; favicon; og image; sitemap.xml + robots; HTTPS redirect; form validation + honeypot
+- [ ] Shopify: create a NEW development store in the owner's account, then sync the catalog
+- Launch checklist done: privacy/terms/accessibility pages, cookie consent, favicon+OG image, sitemap+robots, HTTPS+HSTS, checkout validation+honeypot+terms consent, custom 404, contrast fix, image compression, hero single CTA.

@@ -6,7 +6,7 @@ const STORAGE_KEY = "golassos-lang";
 
 const DICT = {
   // header
-  announcement: ["🎉 חולצות כדורגל 65 ₪ • נעלי כדורגל מ-300 ₪ • משלוח לכל הארץ 🎉", "🎉 Football jerseys 65 ₪ • Football boots from 300 ₪ • Shipping all over Israel 🎉"],
+  announcement: ["🎉 חולצות כדורגל מ-60 ₪ • נעלי כדורגל מ-300 ₪ • משלוח לכל הארץ 🎉", "🎉 Football jerseys from 60 ₪ • Football boots from 300 ₪ • Shipping all over Israel 🎉"],
   tracking: ["מעקב הזמנה", "Tracking"],
   search_placeholder: ["חיפוש...", "Search..."],
   sign_in: ["התחברות / הרשמה", "Sign In/Register"],
@@ -111,7 +111,19 @@ const DICT = {
   rights: ["כל הזכויות שמורות.", "All rights reserved."],
   leagues: ["ליגות", "Leagues"],
   mystery_box: ["מיסטרי בוקס", "Mystery Box"],
+  legal: ["מידע משפטי", "Legal"],
+  privacy_policy: ["מדיניות פרטיות", "Privacy Policy"],
+  terms_page: ["תקנון ותנאי שימוש", "Terms & Conditions"],
+  accessibility: ["הצהרת נגישות", "Accessibility"],
+  cookie_title: ["עוגיות באתר.", "Cookies on this site."],
+  cookie_text: [
+    "אנחנו משתמשים בעוגיות הכרחיות לתפעול העגלה, השפה וההתחברות, ובמידע סטטיסטי כדי לשפר את החנות. פרטים מלאים:",
+    "We use essential cookies for the cart, language and sign-in, plus anonymous statistics to improve the store. Full details:",
+  ],
+  cookie_accept: ["אישור הכל", "Accept all"],
+  cookie_essential: ["רק הכרחיות", "Essential only"],
   lang_switch: ["English", "עברית"],
+
 } as const;
 
 export type TKey = keyof typeof DICT;

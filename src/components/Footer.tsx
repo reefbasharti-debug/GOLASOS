@@ -7,10 +7,18 @@ import type { CatalogGroupMeta } from "@/lib/catalog";
 export function Footer({ settings, groups }: { settings: Record<string, string>; groups: CatalogGroupMeta[] }) {
   const { t } = useLang();
   const [email, setEmail] = useState("");
+  const [bot, setBot] = useState("");
+  const [error, setError] = useState("");
 
   const subscribe = (e: FormEvent) => {
     e.preventDefault();
-    if (!email.includes("@")) return;
+    // Honeypot: real people never fill a hidden field.
+    if (bot.trim()) return;
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email.trim())) {
+      setError("נא להזין כתובת אימייל תקינה");
+      return;
+    }
+    setError("");
     toast.success(t("subscribed"));
     setEmail("");
   };
@@ -35,17 +43,31 @@ export function Footer({ settings, groups }: { settings: Record<string, string>;
         <div>
           <h3 className="text-sm font-bold">{t("newsletter")}</h3>
           <p className="mt-2 text-xs text-muted-foreground">{t("newsletter_hint")}</p>
-          <form onSubmit={subscribe} className="mt-3 flex">
+          <form onSubmit={subscribe} className="mt-3 flex" noValidate>
+            <input
+              type="text"
+              name="company_website"
+              value={bot}
+              onChange={(e) => setBot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="hidden"
+            />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="h-9 w-full rounded-s-md border bg-background px-3 text-sm outline-none"
+              aria-label="Email"
+              aria-invalid={error ? true : undefined}
+              required
+              className="h-9 w-full rounded-s-md border bg-background px-3 text-sm outline-none focus-key"
               dir="ltr"
             />
-            <button className="h-9 rounded-e-md bg-primary px-4 text-xs font-bold text-primary-foreground">{t("subscribe")}</button>
+            <button className="h-9 rounded-e-md bg-primary px-4 text-xs font-bold text-primary-foreground focus-key">{t("subscribe")}</button>
           </form>
+          {error ? <p className="mt-1 text-xs font-semibold text-destructive">{error}</p> : null}
         </div>
         <div>
           <h3 className="text-sm font-bold">{t("company_info")}</h3>
@@ -68,9 +90,11 @@ export function Footer({ settings, groups }: { settings: Record<string, string>;
         <div>
           <h3 className="text-sm font-bold">{t("help")}</h3>
           <ul className="mt-3 space-y-1.5 text-xs">
-            <li><Link to="/contact" className="hover:underline">{t("shipping_methods")}</Link></li>
-            <li><Link to="/contact" className="hover:underline">{t("refund_policy")}</Link></li>
-            <li><Link to="/contact" className="hover:underline">{t("size_guide")}</Link></li>
+            <li><Link to="/terms" hash="shipping" className="hover:underline">{t("shipping_methods")}</Link></li>
+            <li><Link to="/terms" hash="refunds" className="hover:underline">{t("refund_policy")}</Link></li>
+            <li><Link to="/terms" className="hover:underline">{t("terms_page")}</Link></li>
+            <li><Link to="/privacy" className="hover:underline">{t("privacy_policy")}</Link></li>
+            <li><Link to="/accessibility" className="hover:underline">{t("accessibility")}</Link></li>
             <li><Link to="/admin" className="hover:underline">{t("admin")}</Link></li>
           </ul>
           {settings["shipping_note"] ? <p className="mt-4 text-xs text-muted-foreground">{settings["shipping_note"]}</p> : null}
@@ -79,6 +103,11 @@ export function Footer({ settings, groups }: { settings: Record<string, string>;
 
       <div className="border-t">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-xs text-muted-foreground">
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <Link to="/terms" className="hover:underline">{t("terms_page")}</Link>
+            <Link to="/privacy" className="hover:underline">{t("privacy_policy")}</Link>
+            <Link to="/accessibility" className="hover:underline">{t("accessibility")}</Link>
+          </span>
           <span>
             Copyright © {new Date().getFullYear()} {settings["site_title"] || "גולאסוס"}. {t("rights")}
           </span>
