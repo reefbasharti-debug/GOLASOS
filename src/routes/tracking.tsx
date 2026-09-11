@@ -80,12 +80,44 @@ function TrackingPage() {
             </ol>
           )}
 
+          <dl className="mt-6 grid gap-3 rounded-lg border bg-card p-4 text-sm sm:grid-cols-2">
+            <div>
+              <dt className="text-xs font-semibold text-muted-foreground">מספר מעקב</dt>
+              <dd className="font-bold" dir="ltr">
+                {result.order.trackingNumber || "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold text-muted-foreground">סטטוס ההזמנה</dt>
+              <dd className="font-bold">{t(statusKey(result.order.status))}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold text-muted-foreground">מידות שנבחרו</dt>
+              <dd className="font-bold">
+                {result.items
+                  .map((it) => it.size)
+                  .filter(Boolean)
+                  .join(", ") || "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold text-muted-foreground">תאריך העברת התשלום</dt>
+              <dd className="font-bold">
+                {result.order.paidAt
+                  ? new Date(result.order.paidAt).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })
+                  : "טרם שולם"}
+              </dd>
+            </div>
+          </dl>
+
           <ul className="mt-6 divide-y text-sm">
             {result.items.map((it, i) => (
               <li key={i} className="flex justify-between py-2">
                 <span>
                   {it.product_name}
-                  {it.size ? ` (${it.size})` : ""} × {it.quantity}
+                  {it.size ? ` · מידה ${it.size}` : ""}
+                  {it.version === "player" ? " · גרסת שחקן" : ""}
+                  {it.custom_text ? ` · הדפסה: ${it.custom_text}` : ""} × {it.quantity}
                 </span>
                 <span className="font-semibold">₪ {Number(it.unit_price_ils) * it.quantity}</span>
               </li>
