@@ -53,11 +53,11 @@ export const updatePaymentStatus = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .maybeSingle();
     const becamePaid = data.payment_status === "paid" && before?.payment_status !== "paid";
-    const patch: Record<string, string | null> = {
+    const patch: { payment_status: string; paid_at: string | null; status?: string } = {
       payment_status: data.payment_status,
       paid_at: data.payment_status === "paid" ? new Date().toISOString() : null,
     };
-    if (becamePaid && (before?.status === "new" || before?.status === "contacted")) patch["status"] = "paid";
+    if (becamePaid && (before?.status === "new" || before?.status === "contacted")) patch.status = "paid";
     const { error } = await context.supabase.from("orders").update(patch).eq("id", data.id);
     if (error) throw new Error(error.message);
 
