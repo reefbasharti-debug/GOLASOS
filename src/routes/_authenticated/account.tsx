@@ -70,7 +70,10 @@ function AccountPage() {
       return;
     }
     const { error } = await supabase.auth.updateUser(patch);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setPassword("");
     toast.success(patch.email ? "נשלח מייל לאישור הכתובת החדשה" : "הסיסמה עודכנה");
   };

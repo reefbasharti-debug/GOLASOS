@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useCart } from "@/lib/cart";
-import { submitOrder } from "@/lib/store.functions";
+import { submitOrder, submitOrderAuthed } from "@/lib/store.functions";
+import { getAccount } from "@/lib/account.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
   customerName: z.string().trim().min(2, "נא להזין שם מלא").max(80),
@@ -34,6 +36,12 @@ function CheckoutPage() {
   const { items, total, clear } = useCart();
   const navigate = useNavigate();
   const send = useServerFn(submitOrder);
+  const sendAuthed = useServerFn(submitOrderAuthed);
+  const fetchAccount = useServerFn(getAccount);
+  const [signedIn, setSignedIn] = useState(false);
+  const [credit, setCredit] = useState(0);
+  const [useCredit, setUseCredit] = useState(true);
+  const [referral, setReferral] = useState("");
   const [pending, setPending] = useState(false);
   const [shipping, setShipping] = useState<"free" | "express">("free");
   const shippingCost = shipping === "express" ? 50 : 0;
@@ -46,6 +54,27 @@ function CheckoutPage() {
     notes: "",
   });
 
+
+  useEffect(() => {
+    setReferral(localStorage.getItem("golassos-ref") ?? "");
+    void (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) return;
+      setSignedIn(true);
+      try {
+        const account = await fetchAccount();
+        setCredit(Number(account.profile.credit_ils));
+        setForm((f) => ({
+          ...f,
+          customerName: f.customerName || (account.profile.full_name ?? ""),
+          phone: f.phone || (account.profile.phone ?? ""),
+          email: f.email || (account.profile.email ?? ""),
+        }));
+      } catch {
+        /* account details are optional here */
+      }
+    })();
+  }, [fetchAccount]);
 
   const field = (key: keyof typeof form) => ({
     name: key,
@@ -69,18 +98,20 @@ function CheckoutPage() {
 
     setPending(true);
     try {
-      const result = await send({
-        data: {
-          ...parsed.data,
-          shipping,
-          items: items.map((i) => ({
-            productId: i.productId,
-
-            size: i.custom ? `${i.size} | ${i.custom}` : i.size,
-            quantity: i.quantity,
-          })),
-        },
-      });
+      const payload = {
+        ...parsed.data,
+        shipping,
+        referralCode: referral,
+        creditUsed: signedIn && useCredit ? creditApplied : 0,
+        items: items.map((i) => ({
+          productId: i.productId,
+          size: i.size,
+          quantity: i.quantity,
+          version: i.version ?? ("fan" as const),
+          ...(i.custom ? { custom: i.custom } : {}),
+        })),
+      };
+      const result = signedIn ? await sendAuthed({ data: payload }) : await send({ data: payload });
       clear();
       toast.success(`ההזמנה נשלחה! מספר הזמנה ${result.orderNumber}`);
       navigate({ to: "/order-received", search: { n: String(result.orderNumber) } });
@@ -91,6 +122,8 @@ function CheckoutPage() {
       setPending(false);
     }
   };
+
+  const creditApplied = Math.min(credit, total + shippingCost);
 
   if (items.length === 0) {
     return (
@@ -171,6 +204,23 @@ function CheckoutPage() {
               </span>
             </label>
           </fieldset>
+          {signedIn && credit > 0 ? (
+            <label className="flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm font-semibold">
+              <input type="checkbox" checked={useCredit} onChange={(e) => setUseCredit(e.target.checked)} />
+              שימוש בזיכוי חבר מביא חבר ({creditApplied} ₪)
+            </label>
+          ) : null}
+
+          <div>
+            <label className="mb-1 block text-sm font-semibold">קוד חבר מביא חבר (רשות)</label>
+            <input
+              value={referral}
+              onChange={(e) => setReferral(e.target.value.toUpperCase().slice(0, 20))}
+              placeholder="לדוגמה GOLABC123"
+              className="w-full rounded-md border px-3 py-2"
+            />
+          </div>
+
           <div>
             <label className="mb-1 block text-sm font-semibold">הערות להזמנה</label>
             <textarea
@@ -197,7 +247,7 @@ function CheckoutPage() {
           <h2 className="text-lg font-bold">סיכום הזמנה</h2>
           <ul className="mt-3 space-y-2 text-sm">
             {items.map((i) => (
-              <li key={`${i.productId}-${i.size}`} className="flex justify-between gap-2">
+              <li key={`${i.productId}-${i.size}-${i.version ?? "fan"}-${i.custom ?? ""}`} className="flex justify-between gap-2">
                 <span className="min-w-0 flex-1 truncate">
                   {i.name}
                   {i.size ? ` (${i.size})` : ""} × {i.quantity}
@@ -216,7 +266,15 @@ function CheckoutPage() {
               <span>{shippingCost ? `${shippingCost} ₪` : "חינם"}</span>
             </p>
           </div>
-          <p className="mt-2 text-lg font-bold">סה"כ: {total + shippingCost} ₪</p>
+          {signedIn && useCredit && creditApplied > 0 ? (
+            <p className="mt-1 flex justify-between text-sm">
+              <span>זיכוי חבר מביא חבר</span>
+              <span>-{creditApplied} ₪</span>
+            </p>
+          ) : null}
+          <p className="mt-2 text-lg font-bold">
+            סה"כ: {Math.max(0, total + shippingCost - (signedIn && useCredit ? creditApplied : 0))} ₪
+          </p>
 
         </aside>
       </div>

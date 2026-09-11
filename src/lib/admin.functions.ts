@@ -53,11 +53,11 @@ export const updatePaymentStatus = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .maybeSingle();
     const becamePaid = data.payment_status === "paid" && before?.payment_status !== "paid";
-    const patch: Record<string, string | null> = {
+    const patch: { payment_status: string; paid_at: string | null; status?: string } = {
       payment_status: data.payment_status,
       paid_at: data.payment_status === "paid" ? new Date().toISOString() : null,
     };
-    if (becamePaid && (before?.status === "new" || before?.status === "contacted")) patch["status"] = "paid";
+    if (becamePaid && (before?.status === "new" || before?.status === "contacted")) patch.status = "paid";
     const { error } = await context.supabase.from("orders").update(patch).eq("id", data.id);
     if (error) throw new Error(error.message);
 
@@ -220,4 +220,91 @@ export const sendTestNotification = createServerFn({ method: "POST" })
       total: 0,
       items: [],
     });
+  });
+
+export const updateTracking = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({ id: z.string().uuid(), tracking: z.string().trim().max(80) })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const tracking = data.tracking.trim();
+    const { error } = await context.supabase
+      .from("orders")
+      .update({
+        tracking_number: tracking || null,
+        shipped_at: tracking ? new Date().toISOString() : null,
+        ...(tracking ? { status: "shipped" } : {}),
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const updateTicketStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ id: z.string().uuid(), status: z.enum(["open", "in_progress", "closed"]) }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const { error } = await context.supabase
+      .from("support_tickets")
+      .update({ status: data.status })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const saveTestimonial = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid().optional(),
+        customer_name: z.string().trim().min(1).max(80),
+        message: z.string().trim().min(1).max(600),
+        reply: z.string().trim().max(600).optional(),
+        image_url: z.string().trim().max(600).optional(),
+        sort_order: z.number().int().min(0).max(9999).optional(),
+        is_active: z.boolean().optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const row = {
+      customer_name: data.customer_name,
+      message: data.message,
+      reply: data.reply?.trim() ? data.reply.trim() : null,
+      image_url: data.image_url?.trim() ? data.image_url.trim() : null,
+      sort_order: data.sort_order ?? 0,
+      is_active: data.is_active ?? true,
+    };
+    const { error } = data.id
+      ? await context.supabase.from("testimonials").update(row).eq("id", data.id)
+      : await context.supabase.from("testimonials").insert(row);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteTestimonial = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const { error } = await context.supabase.from("testimonials").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const syncSheetTracking = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { pullTrackingFromSheet } = await import("./sheets.server");
+    return pullTrackingFromSheet();
   });
