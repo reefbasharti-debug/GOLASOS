@@ -51,8 +51,9 @@ export function PurchaseToasts({ products }: { products: TickerProduct[] }) {
   if (!popup) return null;
 
   return (
-    <div className="pointer-events-none fixed bottom-4 start-4 z-40 hidden md:block">
-      <div className="pop-in flex w-72 items-center gap-3 rounded-xl border bg-card p-3 shadow-elevated">
+    <div className="pointer-events-none fixed bottom-4 left-4 z-40 hidden md:block">
+      <div className="slide-in-left shadow-soft flex w-72 items-center gap-3 rounded-xl border bg-card p-3">
+
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold">
             {mask(popup.name)} קנה

@@ -260,14 +260,14 @@ export function ChatWidget() {
     <>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="btn-critical focus-key fixed bottom-4 end-4 z-50 flex size-14 items-center justify-center rounded-full shadow-elevated"
+        className="btn-critical focus-key shadow-soft fixed bottom-4 right-4 z-50 flex size-14 items-center justify-center rounded-full"
         aria-label="צ'אט שירות לקוחות"
       >
         {open ? <X className="size-6" /> : <MessageCircle className="size-6" />}
       </button>
 
       {open ? (
-        <div className="fixed bottom-20 end-4 z-50 flex h-[32rem] w-[min(22rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border bg-card shadow-elevated">
+        <div className="shadow-soft fixed bottom-20 right-4 z-50 flex h-[32rem] w-[min(22rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border bg-card">
           <div className="bg-navy px-4 py-3 text-sm font-extrabold text-white">שירות הלקוחות של גולאסוס</div>
 
           <div className="flex-1 space-y-2 overflow-y-auto p-3">
