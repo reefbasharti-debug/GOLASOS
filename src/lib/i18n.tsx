@@ -15,6 +15,7 @@ const DICT = {
   shoes: ["נעליים", "Shoes"],
   contact: ["צור קשר", "Contact Us"],
   cart: ["עגלה", "Cart"],
+  account: ["האזור האישי", "Account"],
   menu: ["תפריט", "Menu"],
   // home
   new_arrivals: ["חדש באתר", "New Arrivals"],
