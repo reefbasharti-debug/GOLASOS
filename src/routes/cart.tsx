@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { useCart, lineKey } from "@/lib/cart";
 import { imageUrl } from "@/lib/img";
+import { createShopifyCheckout } from "@/lib/shopify";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -16,6 +19,27 @@ export const Route = createFileRoute("/cart")({
 
 function CartPage() {
   const { items, total, remove, setQuantity } = useCart();
+  const [paying, setPaying] = useState(false);
+
+  const payNow = async () => {
+    setPaying(true);
+    try {
+      const result = await createShopifyCheckout(items);
+      if (result.ok) {
+        window.open(result.checkoutUrl, "_blank");
+        return;
+      }
+      if (result.reason === "unmapped") {
+        toast.error("חלק מהמוצרים עדיין לא זמינים לתשלום מקוון", {
+          description: "אפשר להשלים את ההזמנה בתיאום אישי בכפתור \"מעבר להזמנה\".",
+        });
+        return;
+      }
+      toast.error("התשלום המקוון לא זמין כרגע", { description: result.message });
+    } finally {
+      setPaying(false);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -82,14 +106,29 @@ function CartPage() {
             ))}
           </ul>
 
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-secondary p-5">
-            <p className="text-lg font-bold">סה"כ: {total} ₪</p>
-            <Link
-              to="/checkout"
-              className="btn-critical rounded-md px-6 py-3 text-sm"
-            >
-              מעבר להזמנה
-            </Link>
+          <div className="mt-8 rounded-lg border bg-secondary p-5">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <p className="text-lg font-bold">סה"כ: {total} ₪</p>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  to="/checkout"
+                  className="btn-critical-ghost focus-key inline-flex min-h-12 items-center rounded-md px-5 text-sm font-bold"
+                >
+                  מעבר להזמנה
+                </Link>
+                <button
+                  type="button"
+                  onClick={payNow}
+                  disabled={paying}
+                  className="btn-critical focus-key inline-flex min-h-12 items-center rounded-md px-6 text-sm font-extrabold disabled:opacity-60"
+                >
+                  {paying ? "רגע..." : "תשלום מאובטח"}
+                </button>
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              תשלום מאובטח בכרטיס אשראי, PayPal ו-Apple Pay נפתח בחלון חדש.
+            </p>
           </div>
         </>
       )}

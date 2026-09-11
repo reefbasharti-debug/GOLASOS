@@ -283,6 +283,7 @@ export type Database = {
           price_ils: number
           product_type: string
           shoe_tier: string | null
+          shopify_product_id: string | null
           sizes: string[]
           sort_order: number
           source_id: string | null
@@ -307,6 +308,7 @@ export type Database = {
           price_ils?: number
           product_type?: string
           shoe_tier?: string | null
+          shopify_product_id?: string | null
           sizes?: string[]
           sort_order?: number
           source_id?: string | null
@@ -331,6 +333,7 @@ export type Database = {
           price_ils?: number
           product_type?: string
           shoe_tier?: string | null
+          shopify_product_id?: string | null
           sizes?: string[]
           sort_order?: number
           source_id?: string | null
