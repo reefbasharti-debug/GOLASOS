@@ -133,11 +133,26 @@ export async function appendOrderToSheet(row: SheetOrderRow): Promise<{ ok: bool
     // Blank row: full visual separation between orders.
     values.push(Array.from({ length: HEADER.length }, () => ""));
 
-    const res = await fetch(`${GATEWAY}/spreadsheets/${id}/values/${RANGE}:append?valueInputOption=USER_ENTERED`, {
-      method: "POST",
+    // Blank separator rows break Sheets' :append table detection, so write after the real last row.
+    let startRow = 2;
+    const colA = await fetch(`${GATEWAY}/spreadsheets/${id}/values/A1:A20000`, { headers });
+    if (colA.ok) {
+      const json = (await colA.json()) as { values?: string[][] };
+      const rows = json.values ?? [];
+      for (let i = rows.length - 1; i >= 0; i--) {
+        if ((rows[i]?.[0] ?? "").trim()) {
+          startRow = i + 3; // 1-indexed row after the last filled one
+          break;
+        }
+      }
+    }
+    const target = `A${startRow}:S${startRow + values.length - 1}`;
+    const res = await fetch(`${GATEWAY}/spreadsheets/${id}/values/${target}?valueInputOption=USER_ENTERED`, {
+      method: "PUT",
       headers,
       body: JSON.stringify({ values }),
     });
+
     if (!res.ok) {
       const body = await res.text();
       console.error(`[sheets] append failed [${res.status}]: ${body}`);
