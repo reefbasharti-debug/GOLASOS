@@ -1,10 +1,25 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, Home, Footprints, Star, Package, HelpCircle, Facebook, Instagram, Menu, Search, ShoppingCart, Twitter, User, Youtube, X, MessageCircle } from "lucide-react";
+import {
+  ChevronDown,
+  Home,
+  Footprints,
+  Package,
+  HelpCircle,
+  Facebook,
+  Instagram,
+  Menu,
+  Search,
+  ShoppingCart,
+  Twitter,
+  User,
+  Youtube,
+  MessageCircle,
+} from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { groupCategories, type CatalogCategory, type CatalogGroupMeta } from "@/lib/catalog";
+import type { CatalogCategory, CatalogGroupMeta } from "@/lib/catalog";
 import { MarqueeBar } from "@/components/MarqueeBar";
 
 export type NavCategory = CatalogCategory;
@@ -46,36 +61,25 @@ export function Logo({ className = "" }: { className?: string }) {
   );
 }
 
-const MAIN_NAV_LIMIT = 7;
-
 /** Audience entries that open the faceted catalog. */
 const PRIMARY_NAV = [
   { label: "גברים", search: { audience: "men" } },
   { label: "ילדים", search: { audience: "kids" } },
   { label: "נשים", search: { audience: "women" } },
 ] as const;
-const SPECIAL_GROUP_NAME = "קולקציות מיוחדות";
 
 export function Header({
-  categories,
-  groups: groupMeta,
   settings,
 }: {
-  categories: NavCategory[];
-  groups: CatalogGroupMeta[];
+  categories?: NavCategory[];
+  groups?: CatalogGroupMeta[];
   settings: Record<string, string>;
 }) {
   const { count } = useCart();
   const { t, lang, setLang } = useLang();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [announceOpen, setAnnounceOpen] = useState(true);
   const [q, setQ] = useState("");
-
-  const groups = groupCategories(categories, groupMeta);
-  const jerseyGroups = groups.filter((g) => g.kind !== "shoes");
-  const specialGroup = groups.find((g) => g.name === SPECIAL_GROUP_NAME);
-  const mainNav = jerseyGroups.filter((g) => g.name !== SPECIAL_GROUP_NAME).slice(0, MAIN_NAV_LIMIT);
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -87,29 +91,17 @@ export function Header({
     { href: settings["instagram"], Icon: Instagram, label: "Instagram" },
     { href: settings["twitter"], Icon: Twitter, label: "X" },
     { href: settings["facebook"], Icon: Facebook, label: "Facebook" },
-    { href: settings["whatsapp"] ? `https://wa.me/${settings["whatsapp"].replace(/\D/g, "")}` : "", Icon: MessageCircle, label: "WhatsApp" },
+    {
+      href: settings["whatsapp"] ? `https://wa.me/${settings["whatsapp"].replace(/\D/g, "")}` : "",
+      Icon: MessageCircle,
+      label: "WhatsApp",
+    },
     { href: settings["youtube"], Icon: Youtube, label: "YouTube" },
   ];
 
   return (
     <header className="bg-background">
       <MarqueeBar />
-
-      {/* Announcement bar */}
-      {announceOpen ? (
-        <div className="announce relative bg-primary text-center text-xs font-bold text-primary-foreground">
-          <Link to="/categories" className="block px-10 py-2.5 tracking-wide">
-            {settings["announcement"] || t("announcement")}
-          </Link>
-          <button
-            onClick={() => setAnnounceOpen(false)}
-            className="absolute end-3 top-1/2 grid size-5 -translate-y-1/2 place-items-center rounded-full bg-background/90 text-primary"
-            aria-label="close"
-          >
-            <X className="size-3" />
-          </button>
-        </div>
-      ) : null}
 
       {/* Utility bar */}
       <div className="border-b">
@@ -152,77 +144,46 @@ export function Header({
               <Menu className="size-5" />
             </SheetTrigger>
             <SheetContent side={lang === "he" ? "right" : "left"} className="w-80 overflow-y-auto">
-              <SheetTitle>{t("all_categories")}</SheetTitle>
-              <nav className="mt-4 space-y-1 pb-10">
-                <div className="mb-3 flex flex-wrap gap-2">
-                  <Link to="/" onClick={() => setOpen(false)} className="nav-key gap-1.5 text-sm">
-                    <Home className="size-4" /> {t("home")}
-                  </Link>
-                  {PRIMARY_NAV.map((item) => (
-                    <Link
-                      key={item.label}
-                      to="/browse"
-                      search={item.search}
-                      onClick={() => setOpen(false)}
-                      className="nav-key gap-1.5 text-sm"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                  <Link to="/shoes" onClick={() => setOpen(false)} className="nav-key gap-1.5 text-sm">
-                    <Footprints className="size-4" /> {t("shoes")}
-                  </Link>
-                  <Link to="/browse" search={{ sport: "basketball" }} onClick={() => setOpen(false)} className="nav-key text-sm">
-                    NBA
-                  </Link>
+              <SheetTitle>{t("menu")}</SheetTitle>
+              <nav className="mt-4 space-y-2 pb-6">
+                <Link to="/" onClick={() => setOpen(false)} className="nav-key flex items-center gap-2 text-sm">
+                  <Home className="size-4" /> {t("home")}
+                </Link>
+                {PRIMARY_NAV.map((item) => (
                   <Link
-                    to="/mystery-box"
+                    key={item.label}
+                    to="/browse"
+                    search={item.search}
                     onClick={() => setOpen(false)}
-                    className="mystery-glow flex items-center gap-2 rounded-full bg-gold px-3 py-2 text-sm font-extrabold text-navy"
+                    className="nav-key flex items-center gap-2 text-sm"
                   >
-                    <Package className="size-4" /> {t("mystery_box")}
+                    {item.label}
                   </Link>
-                </div>
-                {groups.map((g) => (
-
-                  <details key={g.name} className="group">
-                    <summary className="flex cursor-pointer list-none items-center gap-2 rounded px-2 py-1.5 text-sm font-bold hover:bg-secondary">
-                      {g.image_url ? <img src={g.image_url} alt="" className="size-5 object-contain" /> : null}
-                      {g.name} <span className="text-xs opacity-70">({g.items.length})</span>
-                    </summary>
-                    <ul className="mt-1 space-y-0.5 ps-4">
-                      {g.name === SPECIAL_GROUP_NAME ? (
-                        <li>
-                          <Link
-                            to="/mystery-box"
-                            onClick={() => setOpen(false)}
-                            className="mystery-glow mb-2 flex items-center gap-2 rounded-lg border border-gold/60 bg-navy px-2 py-2 text-sm font-extrabold text-white"
-                          >
-                            <span className="relative">
-                              <Package className="size-4" />
-                              <HelpCircle className="absolute -bottom-1 -end-1 size-2.5 text-gold" />
-                            </span>
-                            {t("mystery_box")}
-                          </Link>
-                        </li>
-                      ) : null}
-                      {g.items.map((c) => (
-                        <li key={c.slug}>
-                          <Link
-                            to="/category/$slug"
-                            params={{ slug: c.slug }}
-                            onClick={() => setOpen(false)}
-                            className="block rounded px-2 py-1.5 text-sm hover:bg-secondary"
-                          >
-                            {c.name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
                 ))}
+                <Link
+                  to="/mystery-box"
+                  onClick={() => setOpen(false)}
+                  className="mystery-glow flex items-center gap-2 rounded-full bg-gold px-3 py-2 text-sm font-extrabold text-navy"
+                >
+                  <span className="relative">
+                    <Package className="size-4" />
+                    <HelpCircle className="absolute -bottom-1 -end-1 size-2.5 text-navy" />
+                  </span>
+                  {t("mystery_box")}
+                </Link>
+                <Link to="/shoes" onClick={() => setOpen(false)} className="nav-key flex items-center gap-2 text-sm">
+                  <Footprints className="size-4" /> {t("shoes")}
+                </Link>
+                <Link
+                  to="/browse"
+                  search={{ sport: "basketball" }}
+                  onClick={() => setOpen(false)}
+                  className="nav-key flex items-center gap-2 text-sm"
+                >
+                  NBA
+                </Link>
               </nav>
-              <div className="mt-4 space-y-2">
+              <div className="mt-2 space-y-2">
                 <Link
                   to="/account"
                   onClick={() => setOpen(false)}
@@ -253,14 +214,21 @@ export function Header({
               className="h-10 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
               aria-label={t("search_placeholder")}
             />
-            <button type="submit" className="focus-key grid size-9 place-items-center rounded-full text-primary hover:bg-secondary" aria-label="search">
+            <button
+              type="submit"
+              className="focus-key grid size-9 place-items-center rounded-full text-primary hover:bg-secondary"
+              aria-label="search"
+            >
               <Search className="size-5" />
             </button>
           </div>
         </form>
 
         <div className="flex items-center gap-5">
-          <Link to="/account" className="focus-key hidden items-center gap-1.5 rounded px-1 text-xs font-medium hover:underline md:flex">
+          <Link
+            to="/account"
+            className="focus-key hidden items-center gap-1.5 rounded px-1 text-xs font-medium hover:underline md:flex"
+          >
             <User className="size-4" />
             האזור האישי
           </Link>
@@ -274,60 +242,18 @@ export function Header({
       </div>
 
       {/* Nav row */}
-      <div className="mx-auto hidden max-w-7xl items-stretch px-4 lg:flex">
-        <div className="group relative w-56 shrink-0">
-          <button className="focus-key flex h-12 w-full items-center justify-between bg-primary px-4 text-sm font-bold uppercase text-primary-foreground">
-            {t("all_categories")}
-            <Menu className="size-5" />
-          </button>
-          <div className="invisible absolute start-0 top-full z-40 w-56 border bg-popover opacity-0 shadow-elevated transition-opacity group-hover:visible group-hover:opacity-100">
-            <ul className="max-h-[70vh] overflow-y-auto py-1">
-              {groups.map((g) => (
-                <li key={g.name} className="group/item relative">
-                  <Link
-                    to="/categories"
-                    hash={`g-${encodeURIComponent(g.name)}`}
-                    className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary"
-                  >
-                    {g.image_url ? <img src={g.image_url} alt="" className="size-5 object-contain" /> : <span className="size-5" />}
-                    <span className="flex-1">{g.name}</span>
-                    <ChevronDown className="size-3 -rotate-90 rtl:rotate-90" />
-                  </Link>
-                  <div className="absolute start-full top-0 z-50 hidden w-[36rem] border bg-popover p-4 shadow-elevated group-hover/item:block">
-                    <p className="mb-2 text-sm font-bold">{g.name}</p>
-                    <div className="grid grid-cols-3 gap-x-4 gap-y-1">
-                      {g.items.slice(0, 36).map((c) => (
-                        <Link
-                          key={c.slug}
-                          to="/category/$slug"
-                          params={{ slug: c.slug }}
-                          className="flex items-center gap-1.5 truncate py-0.5 text-xs hover:text-primary hover:underline"
-                        >
-                          {c.logo_url ? <img src={c.logo_url} alt="" className="size-4 object-contain" /> : null}
-                          {c.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <nav className="flex flex-1 flex-wrap items-center gap-x-5 ps-6 text-sm font-bold">
+      <div className="border-y">
+        <nav className="mx-auto hidden max-w-7xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-4 py-2 text-sm font-bold lg:flex">
           {PRIMARY_NAV.map((item) => (
-            <Link
-              key={item.label}
-              to="/browse"
-              search={item.search}
-              className="nav-key my-1.5 flex items-center gap-1.5"
-            >
+            <Link key={item.label} to="/browse" search={item.search} className="nav-key my-1 flex items-center gap-1.5">
               {item.label}
             </Link>
           ))}
 
-          <Link to="/mystery-box" className="mystery-glow my-1.5 flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-sm font-extrabold text-navy">
+          <Link
+            to="/mystery-box"
+            className="mystery-glow my-1 flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-sm font-extrabold text-navy"
+          >
             <span className="relative">
               <Package className="size-4" />
               <HelpCircle className="absolute -bottom-1 -end-1 size-2.5 text-navy" />
@@ -335,69 +261,14 @@ export function Header({
             {t("mystery_box")}
           </Link>
 
-          <Link to="/shoes" className="nav-key my-1.5 flex items-center gap-1.5">
+          <Link to="/shoes" className="nav-key my-1 flex items-center gap-1.5">
             <Footprints className="size-3.5" />
             {t("shoes")}
           </Link>
 
-          <Link to="/browse" search={{ sport: "basketball" }} className="nav-key my-1.5">
+          <Link to="/browse" search={{ sport: "basketball" }} className="nav-key my-1">
             NBA
           </Link>
-
-          {specialGroup ? (
-            <div className="group relative py-3">
-              <Link
-                to="/categories"
-                hash={`g-${encodeURIComponent(specialGroup.name)}`}
-                className="flex items-center gap-1 hover:text-primary/70"
-              >
-                <Star className="size-3.5" />
-                {specialGroup.name} <ChevronDown className="size-3.5" />
-              </Link>
-              <div className="absolute start-0 top-full z-40 hidden w-[34rem] border bg-popover p-4 shadow-elevated group-hover:block">
-                <div className="grid grid-cols-3 gap-x-4 gap-y-1">
-                  {specialGroup.items.slice(0, 30).map((c) => (
-                    <Link
-                      key={c.slug}
-                      to="/category/$slug"
-                      params={{ slug: c.slug }}
-                      className="flex items-center gap-1.5 truncate py-0.5 text-xs font-medium hover:text-primary hover:underline"
-                    >
-                      {c.logo_url ? <img src={c.logo_url} alt="" className="size-4 object-contain" /> : null}
-                      {c.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          {mainNav.slice(0, 3).map((g) => (
-            <div key={g.name} className="group relative py-3">
-              <Link
-                to="/categories"
-                hash={`g-${encodeURIComponent(g.name)}`}
-                className="flex items-center gap-1 hover:text-primary/70"
-              >
-                {g.name} <ChevronDown className="size-3.5" />
-              </Link>
-              <div className="absolute start-0 top-full z-40 hidden w-[34rem] border bg-popover p-4 shadow-elevated group-hover:block">
-                <div className="grid grid-cols-3 gap-x-4 gap-y-1">
-                  {g.items.slice(0, 30).map((c) => (
-                    <Link
-                      key={c.slug}
-                      to="/category/$slug"
-                      params={{ slug: c.slug }}
-                      className="flex items-center gap-1.5 truncate py-0.5 text-xs font-medium hover:text-primary hover:underline"
-                    >
-                      {c.logo_url ? <img src={c.logo_url} alt="" className="size-4 object-contain" /> : null}
-                      {c.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
         </nav>
       </div>
     </header>
