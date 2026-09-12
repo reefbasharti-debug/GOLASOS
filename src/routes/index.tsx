@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DEFAULT_SLIDES, HeroSlider } from "@/components/HeroSlider";
 import { getHomeData } from "@/lib/store.functions";
 import { getRequestOrigin } from "@/lib/origin.functions";
-import { useLang } from "@/lib/i18n";
 import { Advantages, BestsellersStrip, Testimonials, TopTeams } from "@/components/HomeSections";
 
 export const Route = createFileRoute("/")({
@@ -40,13 +38,10 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const home = Route.useLoaderData();
-  const { lang } = useLang();
 
   return (
     <div className="mx-auto max-w-7xl px-4">
       <h1 className="sr-only">גולאסוס - חולצות ונעלי כדורגל</h1>
-
-      <HeroSlider slides={DEFAULT_SLIDES[lang]} />
 
       <TopTeams teams={home.topTeams} />
 
