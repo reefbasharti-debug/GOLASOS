@@ -18,4 +18,4 @@
 - [ ] Shopify: create a NEW development store in the owner's account, then sync the catalog
 - Launch checklist done: privacy/terms/accessibility pages, cookie consent, favicon+OG image, sitemap+robots, HTTPS+HSTS, checkout validation+honeypot+terms consent, custom 404, contrast fix, image compression, hero single CTA.
 - Shopify: new dev store created (lovable-project-cuw7m-pqzrvzac). Top 20 products synced with images/sizes/prices; products.shopify_product_id maps local -> Shopify. Cart "תשלום מאובטח" creates a real Shopify cart via Storefront API 2025-07 and opens checkout. Remaining: sync the rest of the catalog in batches of 20; live payments require claiming the store.
-- [ ] Shopify theme: match store design (colors, fonts, logo, layout) — manual via Shopify Admin theme editor; prepare spec for owner
+- [ ] Shopify theme "גולאסוס לאב 2": upload prepared theme ZIP to existing claimed store and preview/publish — blocked on Theme API access (current integration provides product access, direct admin token rejected). ZIP built for owner import via Shopify Admin.
